@@ -1,0 +1,71 @@
+syntax on
+set nocompatible
+set backspace=indent,eol,start
+set noerrorbells
+set belloff=all
+set tabstop=4 softtabstop=4
+set shiftwidth=4
+set expandtab
+set smartindent
+set nowrap
+set ignorecase
+set smartcase
+set noswapfile
+set nobackup
+set undodir=~/.vim/undodir
+set undofile
+set incsearch
+set foldmethod=syntax
+
+"set colorcolumn=80
+"highlight ColorColumn ctermbg=0 
+
+set clipboard=unnamed
+set relativenumber
+set shell=$COMSPEC "
+
+"space leader
+let mapleader = " "
+
+nnoremap <c-q> <c-v>
+"nnoremap <c-r>  viw"0P
+
+"Scroll down
+nnoremap <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>     
+"Scroll up
+map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
+
+"Put on line below
+nnoremap <c-j> :pu<CR>
+nnoremap <c-k> :pu!<CR>
+
+if executable('rg')
+    let g:rg_derive_root='true'
+endif
+
+
+" Quickly open/reload vimrc
+nnoremap <leader>rc :tabe $HOME/vimfiles/vimrc<CR>  
+nnoremap <leader>grc :tabe $HOME/vimfiles/gvimrc<CR>  
+nnoremap <leader>so :source $HOME/vimfiles/vimrc<CR>
+nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
+
+nnoremap <leader>q :q<CR>
+nnoremap <c-s> :w<CR>
+nnoremap <c-t> :tabe<CR>
+
+nnoremap <leader>wq :wq<CR>
+nnoremap <c-p> :FZF<CR>
+nnoremap <c-f> :Rg<Space>
+nnoremap <leader>9 :tabprev<CR>
+nnoremap <leader>0 :tabnext<CR>
+nnoremap <leader>dd :%d<CR> "delete all lines in file
+
+"format json
+nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
+
+"Reload vimrc on save
+"autocmd! bufwritepost .vimrc source %
+
+"good to know:
+    "nnoremap stands for normal-no-recursive-map
