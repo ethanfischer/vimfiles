@@ -68,3 +68,15 @@ nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 
 "good to know:
     "nnoremap stands for normal-no-recursive-map
+
+"G is from Git-fugitive 
+command StashAll G add . | G stash
+command Sta StashAll
+command StashPop G stash pop
+command Stp StashPop
+command Nuke G reset --hard | G clean -fd
+command Chm G checkout master
+command CheckoutPrevious G checkout -
+command Chp CheckoutPrevious
+command MergeMaster G checkout master | G pull | G checkout - | G merge master
+command Mm MergeMaster
