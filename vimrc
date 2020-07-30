@@ -59,9 +59,13 @@ nnoremap <c-f> :Rg<Space>
 nnoremap <leader>9 :tabprev<CR>
 nnoremap <leader>0 :tabnext<CR>
 nnoremap <leader>dd :%d<CR> "delete all lines in file
+nnoremap <leader>vv ggVG<CR> "highlight all lines in file
 
 "format json
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
+
+"Copy open file path
+noremap <F1> :let @+=expand("%:p")<CR>
 
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %

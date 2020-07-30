@@ -70,3 +70,4 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 
+set statusline^=%{coc#status()}
