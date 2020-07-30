@@ -2,7 +2,7 @@
 au GUIEnter * simalt ~x
 
 "tutorial followed for gvim setup https://www.youtube.com/watch?v=FuPFoVDdTtE&t=1458s
-"source $HOME/.vim/vimrc
+"source $HOME/vimfiles/vimrc
 
 "FONT
 if has("gui_running")
