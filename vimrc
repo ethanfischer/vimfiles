@@ -15,12 +15,14 @@ set nobackup
 set undofile
 set incsearch
 set foldmethod=syntax
+set foldlevelstart=99 "open all folds
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
 
 set clipboard=unnamed
-set relativenumber
+set nornu
+set number
 set shell=$COMSPEC "
 
 "space leader
@@ -66,6 +68,8 @@ nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 
 "Copy open file path
 noremap <F1> :let @+=expand("%:p")<CR>
+
+noremap <leader># :set rnu!<CR>
 
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
