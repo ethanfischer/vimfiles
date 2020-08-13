@@ -13,6 +13,7 @@ set smartcase
 set noswapfile
 set nobackup
 set undofile
+set undodir=~/vimfiles/undodir
 set incsearch
 set foldmethod=syntax
 set foldlevelstart=99 "open all folds
@@ -62,6 +63,11 @@ nnoremap <leader>9 :tabprev<CR>
 nnoremap <leader>0 :tabnext<CR>
 nnoremap <leader>dd :%d<CR> "delete all lines in file
 nnoremap <leader>vv ggVG<CR> "highlight all lines in file
+
+nnoremap <leader>h :wincmd h<CR>
+nnoremap <leader>j :wincmd j<CR>
+nnoremap <leader>k :wincmd k<CR>
+nnoremap <leader>l :wincmd l<CR>
 
 "format json
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>

@@ -37,6 +37,7 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'tpope/vim-commentary'
 Plug 'andrewradev/sideways.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'bling/vim-airline'
 
 " Initialize plugin system
 call plug#end()
@@ -53,10 +54,6 @@ set guioptions-=l "remove left scrollbar
 set guioptions-=L "remove left scrollbar
 
 "gVim specific keybindings:
-nnoremap <leader>h :wincmd h<CR>
-nnoremap <leader>j :wincmd j<CR>
-nnoremap <leader>k :wincmd k<CR>
-nnoremap <leader>l :wincmd l<CR>
 nnoremap <leader>sp :edit!$HOME/Documents/Notes/ScratchPad.txt<CR>
 nnoremap <leader>ics :NERDTree C:/InContext/Git/<CR>    
 
@@ -71,3 +68,6 @@ nmap <silent> gr <Plug>(coc-references)
 
 
 set statusline^=%{coc#status()}
+let g:airline_section_z = ''
+let g:airline_section_y = ''
+let g:airline_section_warning=""
