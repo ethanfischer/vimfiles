@@ -77,6 +77,7 @@ nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 noremap <F1> :let @+=expand("%:p")<CR>
 
 noremap <leader>; :set rnu!<CR>
+noremap <leader># :set rnu!<CR>
 
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
