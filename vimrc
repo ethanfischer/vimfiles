@@ -53,6 +53,7 @@ nnoremap <leader>so :source $HOME/vimfiles/vimrc<CR>
 nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
 
 nnoremap <leader>q :q<CR>
+nnoremap <leader>Q :q!<CR>
 nnoremap <c-s> :w<CR>
 nnoremap <c-t> :tabe<CR>
 
@@ -75,6 +76,7 @@ nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 "Copy open file path
 noremap <F1> :let @+=expand("%:p")<CR>
 
+noremap <leader>; :set rnu!<CR>
 noremap <leader># :set rnu!<CR>
 
 "Reload vimrc on save
