@@ -17,6 +17,7 @@ set undodir=~/vimfiles/undodir
 set incsearch
 set foldmethod=syntax
 set foldlevelstart=99 "open all folds
+set encoding=utf8
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
