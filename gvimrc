@@ -56,7 +56,8 @@ set guioptions-=L "remove left scrollbar
 
 "gVim specific keybindings:
 nnoremap <leader>sp :edit!$HOME/Documents/Notes/ScratchPad.txt<CR>
-nnoremap <leader>ics :NERDTree C:/InContext/Git/<CR>    
+"nnoremap <leader>ics :NERDTree C:/InContext/Git/<CR>    
+nnoremap <leader>ics :NERDTree C:\Users\ethan.fischer\GitProjects\ICS<CR>    
 
 " specific keybindings
 nnoremap <silent><leader>nt :NERDTreeFind<CR>
