@@ -39,6 +39,8 @@ Plug 'tpope/vim-commentary'
 Plug 'andrewradev/sideways.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'bling/vim-airline'
+Plug 'pedrohdz/vim-yaml-folds'
+Plug 'sagarrakshe/toggle-bool'
 
 " Initialize plugin system
 call plug#end()
@@ -67,6 +69,9 @@ nnoremap <c-h> :SidewaysLeft<CR>
 nmap gd <Plug>(coc-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+"toggle bool
+noremap <c-a> :ToggleBool<CR>
 
 
 set statusline^=%{coc#status()}
