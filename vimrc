@@ -75,12 +75,18 @@ nnoremap <leader>l :wincmd l<CR>
 
 "format json
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
+"remove escape characters and starting and ending quotes from copied json
+nnoremap <leader>/j V:s/\\//g0x$x<CR>
+
 
 "Copy open file path
 noremap <F1> :let @+=expand("%:p")<CR>
 
 noremap <leader>; :set rnu!<CR>
 noremap <leader># :set rnu!<CR>
+
+"Remove empty lines
+"g/^$/d
 
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
