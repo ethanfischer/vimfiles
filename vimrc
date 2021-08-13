@@ -59,6 +59,8 @@ nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :q!<CR>
 nnoremap <c-s> :w<CR>
 nnoremap <c-t> :tabe<CR>
+nnoremap <C-_> <C-o>
+"nnoremap <Shift C-_> <C-i> no way to map to ctrl shift minus in Vim :(
 
 nnoremap <leader>wq :wq<CR>
 nnoremap <c-p> :FZF<CR>
@@ -75,12 +77,18 @@ nnoremap <leader>l :wincmd l<CR>
 
 "format json
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
+"remove escape characters and starting and ending quotes from copied json
+nnoremap <leader>/j V:s/\\//g0x$x<CR>
+
 
 "Copy open file path
 noremap <F1> :let @+=expand("%:p")<CR>
 
 noremap <leader>; :set rnu!<CR>
 noremap <leader># :set rnu!<CR>
+
+"Remove empty lines
+"g/^$/d
 
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
