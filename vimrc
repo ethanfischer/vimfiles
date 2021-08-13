@@ -18,6 +18,7 @@ set incsearch
 set foldmethod=syntax
 set foldlevelstart=99 "open all folds
 set encoding=utf8
+set guioptions-=a
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
@@ -84,6 +85,22 @@ noremap <F1> :let @+=expand("%:p")<CR>
 
 noremap <leader>; :set rnu!<CR>
 noremap <leader># :set rnu!<CR>
+
+"capital y should yank to end of line, just like capital c and capital d
+"operates to the end of the line
+nnoremap Y y$
+nnoremap V v$
+
+"make certain characters undoable in insert mode
+inoremap , ,<c-g>u
+inoremap . .<c-g>u
+inoremap [ [<c-g>u
+inoremap ! !<c-g>u
+inoremap ? ?<c-g>u
+
+"ability to move highlighted lines up and down
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
 "Remove empty lines
 "g/^$/d
