@@ -22,7 +22,9 @@ set encoding=utf8
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
 
-set clipboard=unnamed
+"set clipboard=unnamed Disabling temporarily so I can figure out if clipboard
+"is causing lags in Visual Studio
+"https://github.com/VsVim/VsVim/issues/2035
 set nornu
 set number
 set shell=$COMSPEC "
