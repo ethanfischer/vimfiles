@@ -88,10 +88,12 @@ noremap <F1> :let @+=expand("%:p")<CR>
 noremap <leader>; :set rnu!<CR>
 noremap <leader># :set rnu!<CR>
 
+
 "capital y should yank to end of line, just like capital c and capital d
 "operates to the end of the line
 nnoremap Y y$
 nnoremap V v$
+vnoremap v v0v$
 
 "make certain characters undoable in insert mode
 inoremap , ,<c-g>u
