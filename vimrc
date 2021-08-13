@@ -95,6 +95,9 @@ nnoremap Y y$
 nnoremap V v$
 vnoremap v v0v$
 
+" CTRL-C and are Copy to windows clipboard
+vnoremap <C-C> "+y
+
 "make certain characters undoable in insert mode
 inoremap , ,<c-g>u
 inoremap . .<c-g>u
