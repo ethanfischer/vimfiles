@@ -26,6 +26,7 @@ set guioptions-=a
 "set clipboard=unnamed Disabling temporarily so I can figure out if clipboard
 "is causing lags in Visual Studio
 "https://github.com/VsVim/VsVim/issues/2035
+set clipboard=unnamed
 set nornu
 set number
 set shell=$COMSPEC "
@@ -37,9 +38,9 @@ nnoremap <c-q> <c-v>
 "nnoremap <c-r>  viw"0P
 
 "Scroll down
-nnoremap <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>     
+nnoremap <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>M
 "Scroll up
-map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
+map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>M
 
 "Put on line below
 nnoremap <c-j> :pu<CR>
@@ -53,6 +54,7 @@ endif
 " Quickly open/reload vimrc
 nnoremap <leader>rc :tabe $HOME/vimfiles/vimrc<CR>  
 nnoremap <leader>grc :tabe $HOME/vimfiles/gvimrc<CR>  
+nnoremap <leader>nrc :tabe $HOME/appdata/local/nvim/init.vim<CR>  
 nnoremap <leader>so :source $HOME/vimfiles/vimrc<CR>
 nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
 
@@ -93,7 +95,7 @@ noremap <leader># :set rnu!<CR>
 "operates to the end of the line
 nnoremap Y y$
 nnoremap V v$
-vnoremap v v0v$
+vnoremap v V
 
 " CTRL-C and are Copy to windows clipboard
 vnoremap <C-C> "+y
