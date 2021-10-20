@@ -27,6 +27,7 @@ Plug 'junegunn/vim-easy-align'
 " Plugins recommended by ThePrimeagen:https://www.youtube.com/watch?v=n9k9scbTuvQ&t=735s
 " Color Scheme
 Plug 'morhetz/gruvbox'
+Plug 'srcery-colors/srcery-vim'
 Plug 'jremmen/vim-ripgrep'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
@@ -41,11 +42,17 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'bling/vim-airline'
 Plug 'pedrohdz/vim-yaml-folds'
 Plug 'sagarrakshe/toggle-bool'
+Plug 'ThePrimeagen/vim-be-good'
+Plug 'OmniSharp/omnisharp-vim'
+Plug 'dense-analysis/ale'
+Plug 'ptzz/lf.vim'
+Plug 'voldikss/vim-floaterm'
 
 " Initialize plugin system
 call plug#end()
 
 colorscheme gruvbox
+
 set background=dark
 
 set guioptions-=m "remove menu bar
@@ -78,3 +85,25 @@ set statusline^=%{coc#status()}
 let g:airline_section_z = ''
 let g:airline_section_y = ''
 let g:airline_section_warning=""
+
+
+"Autocomplete mappings inspired by this link but slightly tweaked to my liking
+"https://github.com/hrsh7th/nvim-compe/issues/141
+inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n><C-y>" : "\<TAB>" 
+inoremap <expr> <Esc> pumvisible() ? "\<C-e>" : "\<Esc>"
+inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <expr> <enter> pumvisible() ? "\<C-y>" : "\<Enter>"
+
+
+"ALE config to only lint csharp
+"https://github.com/OmniSharp/omnisharp-vim
+let g:ale_linters = {
+\ 'cs': ['OmniSharp']
+\}
+
+
+let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
+
+"execute current file from shell (make sure to :cd %/.. first)
+nnoremap <F5> :!%<CR>

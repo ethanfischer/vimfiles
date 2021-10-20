@@ -19,6 +19,7 @@ set foldmethod=syntax
 set foldlevelstart=99 "open all folds
 set encoding=utf8
 set guioptions-=a
+set diffopt=vertical
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
@@ -71,7 +72,7 @@ nnoremap <c-f> :Rg<Space>
 nnoremap <leader>9 :tabprev<CR>
 nnoremap <leader>0 :tabnext<CR>
 nnoremap <leader>dd :%d<CR> "delete all lines in file
-nnoremap <leader>vv ggVG<CR> "highlight all lines in file
+nnoremap <leader>vv ggVG "highlight all lines in file
 
 nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
@@ -111,6 +112,9 @@ inoremap ? ?<c-g>u
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
+"open
+nnoremap <C-o> :open<CR>
+
 "Remove empty lines
 "g/^$/d
 
@@ -119,6 +123,9 @@ vnoremap K :m '<-2<CR>gv=gv
 
 "good to know:
     "nnoremap stands for normal-no-recursive-map
+
+"vim diff command
+":vert diffs otherfile.config
 
 "G is from Git-fugitive 
 command StashAll G add . | G stash
