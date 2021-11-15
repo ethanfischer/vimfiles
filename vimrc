@@ -7,7 +7,8 @@ set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
-set nowrap
+"set nowrap
+set wrap
 set ignorecase
 set smartcase
 set noswapfile
