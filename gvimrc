@@ -47,7 +47,7 @@ Plug 'OmniSharp/omnisharp-vim'
 Plug 'dense-analysis/ale'
 Plug 'ptzz/lf.vim'
 Plug 'voldikss/vim-floaterm'
-
+Plug 'jkramer/vim-checkbox'
 " Initialize plugin system
 call plug#end()
 
@@ -79,6 +79,9 @@ nmap <silent> gr <Plug>(coc-references)
 
 "toggle bool
 noremap <c-a> :ToggleBool<CR>
+
+"checkbox
+nnoremap <leader><enter> :ToggleCB<CR>
 
 
 set statusline^=%{coc#status()}
