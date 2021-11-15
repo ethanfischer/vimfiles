@@ -81,6 +81,7 @@ nmap <silent> gr <Plug>(coc-references)
 noremap <c-a> :ToggleBool<CR>
 
 "checkbox
+"default is leader tt
 nnoremap <leader><enter> :ToggleCB<CR>
 
 
