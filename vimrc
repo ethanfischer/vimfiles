@@ -23,7 +23,7 @@ set guioptions-=a
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
 
-"set clipboard=unnamed Disabling temporarily so I can figure out if clipboard
+set clipboard=unnamed "Disabling temporarily so I can figure out if clipboard
 "is causing lags in Visual Studio
 "https://github.com/VsVim/VsVim/issues/2035
 set clipboard=unnamed
@@ -61,6 +61,7 @@ nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :q!<CR>
 nnoremap <c-s> :w<CR>
+inoremap <c-s> <C-O>:w<CR>
 nnoremap <c-t> :tabe<CR>
 nnoremap <C-_> <C-o>
 "nnoremap <Shift C-_> <C-i> no way to map to ctrl shift minus in Vim :(
@@ -119,6 +120,9 @@ vnoremap K :m '<-2<CR>gv=gv
 
 "good to know:
     "nnoremap stands for normal-no-recursive-map
+    "browse oldfiles brings up recently edited files
+    "
+nnoremap <leader>? :browse oldfiles<CR>
 
 "G is from Git-fugitive 
 command StashAll G add . | G stash
