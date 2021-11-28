@@ -124,6 +124,8 @@ nnoremap <C-o> :open<CR>
 
 "good to know:
     "nnoremap stands for normal-no-recursive-map
+    "nvim's version of vimrc is at ~/.config/nvim/init.vim
+    "browse oldfiles brings up recently edited files
 
 "vim diff command
 ":vert diffs otherfile.config

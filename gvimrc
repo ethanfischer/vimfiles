@@ -1,19 +1,19 @@
 "start maximized
-au GUIEnter * simalt ~x
+"au GUIEnter * simalt ~x
 
 "tutorial followed for gvim setup https://www.youtube.com/watch?v=FuPFoVDdTtE&t=1458s
 "source $HOME/vimfiles/vimrc
 
 "FONT
-if has("gui_running")
-  if has("gui_gtk2")
-    set guifont=Inconsolata\ 12
-  elseif has("gui_macvim")
-    set guifont=Menlo\ Regular:h14
-  elseif has("gui_win32")
-    set guifont=Consolas:h11:cANSI
-  endif
-endif
+"if has("gui_running")
+"  if has("gui_gtk2")
+"    set guifont=Inconsolata\ 12
+"  elseif has("gui_macvim")
+"    set guifont=Menlo\ Regular:h14
+"  elseif has("gui_win32")
+"    set guifont=Consolas:h11:cANSI
+"  endif
+"endif
 
 ""VIM PLUG setup https://github.com/junegunn/vim-plug
 " Specify a directory for plugins
@@ -63,19 +63,19 @@ set guioptions-=R "remove right scrollbar
 set guioptions-=l "remove left scrollbar
 set guioptions-=L "remove left scrollbar
 
-"gVim specific keybindings:
-nnoremap <leader>sp :edit!$HOME/Documents/Notes/ScratchPad.txt<CR>
+"nvim specific keybindings:
+nnoremap <leader>sp :edit!~/Documents/Notes/ScratchPad.txt<CR>
 "nnoremap <leader>ics :NERDTree C:/InContext/Git/<CR>    
-nnoremap <leader>ics :NERDTree C:\Users\ethan.fischer\GitProjects\ICS<CR>    
+"nnoremap <leader>ics :NERDTree C:\Users\ethan.fischer\GitProjects\ICS<CR>    
 
 " specific keybindings
-nnoremap <silent><leader>nt :NERDTreeFind<CR>
-nnoremap <silent><leader> :WhichKey '<Space>'<CR>
-nnoremap <c-l> :SidewaysRight<CR>
-nnoremap <c-h> :SidewaysLeft<CR>
-nmap gd <Plug>(coc-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+"nnoremap <silent><leader>nt :NERDTreeFind<CR>
+"nnoremap <silent><leader> :WhichKey '<Space>'<CR>
+"nnoremap <c-l> :SidewaysRight<CR>
+"nnoremap <c-h> :SidewaysLeft<CR>
+"nmap gd <Plug>(coc-definition)
+"nmap <silent> gi <Plug>(coc-implementation)
+"nmap <silent> gr <Plug>(coc-references)
 
 "toggle bool
 noremap <c-a> :ToggleBool<CR>
@@ -102,12 +102,12 @@ inoremap <expr> <enter> pumvisible() ? "\<C-y>" : "\<Enter>"
 
 "ALE config to only lint csharp
 "https://github.com/OmniSharp/omnisharp-vim
-let g:ale_linters = {
-\ 'cs': ['OmniSharp']
-\}
+"let g:ale_linters = {
+"\ 'cs': ['OmniSharp']
+"\}
 
 
-let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
+"let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
 
 "execute current file from shell (make sure to :cd %/.. first)
 nnoremap <F5> :!%<CR>
