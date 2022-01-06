@@ -122,11 +122,6 @@ nnoremap <C-o> :open<CR>
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
 
-"good to know:
-    "nnoremap stands for normal-no-recursive-map
-
-"vim diff command
-":vert diffs otherfile.config
 
 "G is from Git-fugitive 
 command StashAll G add . | G stash
@@ -139,3 +134,12 @@ command CheckoutPrevious G checkout -
 command Chp CheckoutPrevious
 command MergeMaster G checkout master | G pull | G checkout - | G merge master
 command Mm MergeMaster
+
+
+"good to know:
+    "nnoremap stands for normal-no-recursive-map
+
+    "vim diff command
+        ":vert diffs otherfile.config
+    "make numbered list from 1 to 10
+        "put =range(1,10)
