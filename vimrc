@@ -84,6 +84,9 @@ nnoremap <leader>l :wincmd l<CR>
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 "remove escape characters and starting and ending quotes from copied json
 nnoremap <leader>/j V:s/\\//g0x$x<CR>
+"toggle blackslash/forwardslash in selection
+vnoremap <leader>// :s,\\,/,g<CR>
+vnoremap <leader>\\ :s,/,\\,g<CR>
 
 
 "Copy open file path
