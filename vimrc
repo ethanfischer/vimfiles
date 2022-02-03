@@ -119,6 +119,9 @@ vnoremap K :m '<-2<CR>gv=gv
 "open
 nnoremap <C-o> :open<CR>
 
+"recent files
+nnoremap <leader>? :browse oldfiles<CR>
+
 "Remove empty lines
 "g/^$/d
 
