@@ -29,8 +29,7 @@ set diffopt=vertical
 "is causing lags in Visual Studio
 "https://github.com/VsVim/VsVim/issues/2035
 set clipboard=unnamed
-set nornu
-set number
+set rnu
 set shell=$COMSPEC "
 
 "space leader
@@ -64,10 +63,10 @@ nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :q!<CR>
 nnoremap <c-s> :w<CR>
 nnoremap <c-t> :tabe<CR>
-nnoremap <C-_> <C-o>
-"nnoremap <Shift C-_> <C-i> no way to map to ctrl shift minus in Vim :(
+"VStudio forward and back mappings
+nnoremap <C--> <C-o>  
+nnoremap <C-S-_> <C-i>
 
-nnoremap <leader>wq :wq<CR>
 nnoremap <c-p> :FZF<CR>
 nnoremap <c-f> :Rg<Space>
 nnoremap <leader>9 :tabprev<CR>
@@ -116,8 +115,8 @@ inoremap ? ?<c-g>u
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-"open
-nnoremap <C-o> :open<CR>
+"open (what? 2022/08/03)
+"nnoremap <C-o> :open<CR>
 
 "recent files
 nnoremap <leader>? :browse oldfiles<CR>
@@ -149,3 +148,5 @@ command Mm MergeMaster
         ":vert diffs otherfile.config
     "make numbered list from 1 to 10
         "put =range(1,10)
+    "multi cursor editing
+    " Ctrl V, Shift I to insert on multiple lines
