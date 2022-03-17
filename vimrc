@@ -21,6 +21,7 @@ set foldlevelstart=99 "open all folds
 set encoding=utf8
 set guioptions-=a
 set diffopt=vertical
+""set autoread
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
@@ -31,6 +32,12 @@ set diffopt=vertical
 set clipboard=unnamed
 set rnu
 set shell=$COMSPEC "
+
+"not entirely sure what this does but it's supposed to fix issue with
+"omnisharp where intellisense gets out of date
+"https://github.com/OmniSharp/omnisharp-vim/issues/660
+"set hidden
+
 
 "space leader
 let mapleader = " "
@@ -83,6 +90,7 @@ nnoremap <leader>l :wincmd l<CR>
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 "remove escape characters and starting and ending quotes from copied json
 nnoremap <leader>/j V:s/\\//g0x$x<CR>
+nnoremap <leader>/jrn V:s/\\r\\n//g0x$x<CR>
 "toggle blackslash/forwardslash in selection
 vnoremap <leader>// :s,\\,/,g<CR>
 vnoremap <leader>\\ :s,/,\\,g<CR>
@@ -128,6 +136,14 @@ nnoremap <leader>? :browse oldfiles<CR>
 "autocmd! bufwritepost .vimrc source %
 
 
+"Auto insert matching brace, quote, etc
+"inoremap { {<CR>}<Esc>O
+"inoremap ( ()<Esc>ha
+"inoremap [ []<Esc>ha
+"inoremap " ""<Esc>ha
+"inoremap ' ''<Esc>ha
+"inoremap ` ``<Esc>ha
+
 "G is from Git-fugitive 
 command StashAll G add . | G stash
 command Sta StashAll
@@ -150,3 +166,10 @@ command Mm MergeMaster
         "put =range(1,10)
     "multi cursor editing
     " Ctrl V, Shift I to insert on multiple lines
+
+    "gcc to toggle comments
+    
+    "to compare two files, create a vsplit (ctrl-w, v)(or :vsplit)
+    "open the other file in the other split (ctrl-p, find file)
+    "in one of the splits, enter :windo diffthis
+    "https://old.reddit.com/r/vim/comments/hjblbb/vimdiff_builtin_tool_to_compare_two_or_more_files/
