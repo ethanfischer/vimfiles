@@ -54,8 +54,9 @@ Plug 'antoinemadec/FixCursorHold.nvim'
 call plug#end()
 
 colorscheme gruvbox
-
 set background=dark
+"ultra dark
+"highlight Normal guibg=black guifg=white
 
 set guioptions-=m "remove menu bar
 set guioptions-=T "remove toolbar
@@ -75,9 +76,6 @@ nnoremap <silent><leader>nt :NERDTreeFind<CR>
 nnoremap <silent><leader> :WhichKey '<Space>'<CR>
 nnoremap <c-l> :SidewaysRight<CR>
 nnoremap <c-h> :SidewaysLeft<CR>
-nmap gd <Plug>(coc-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
 
 "toggle bool
 noremap <c-a> :ToggleBool<CR>
@@ -86,6 +84,24 @@ noremap <c-a> :ToggleBool<CR>
 "default is leader tt
 nnoremap <leader><enter> :ToggleCB<CR>
 
+"coc stuff
+"nmap gd <Plug>(coc-definition)
+"nmap <silent> gi <Plug>(coc-implementation)
+"nmap <silent> gr <Plug>(coc-references)
+"imap <C-l> <Plug>(coc-snippets-expand)
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
 
 set statusline^=%{coc#status()}
 let g:airline_section_z = ''
@@ -101,7 +117,9 @@ inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <expr> <enter> pumvisible() ? "\<C-y>" : "\<Enter>"
 
+"lf
 let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
+nnoremap <Leader>lf :LfCurrentFile<CR>
 
 "execute current file from shell (make sure to :cd %/.. first)
 nnoremap <F5> :!%<CR>
@@ -109,11 +127,6 @@ nnoremap <F5> :!%<CR>
 "For jumping to next capital letter or underscore casing, use leader-w,
 "leader-b, etc
 let g:wordmotion_prefix = '<Leader>'
-
-"nnoremap <F12> :OmniSharpGotoDefinition<CR>
-"nnoremap <S-F12> :OmniSharpFindUsages<CR>
-"nnoremap <C-F12> :OmniSharpFindImplementations<CR>
-
 
 "OmniSharp Settings
 "
@@ -186,7 +199,8 @@ augroup END
 let g:OmniSharp_selector_findusages = 'fzf'
 
 " Enable snippet completion, using the ultisnips plugin
-" let g:OmniSharp_want_snippet=1
+"let g:OmniSharp_want_snippet=0
+
 
 "End of Omnisharp Settings
 
@@ -194,3 +208,13 @@ let g:OmniSharp_selector_findusages = 'fzf'
 " use updatetime instead if not defined
 let g:cursorhold_updatetime = 500
 
+
+" Automatically open, but do not go to (if there are errors) the quickfix /
+" location list window, or close it when is has become empty.
+"
+" Note: Must allow nesting of autocmds to enable any customizations for quickfix
+" buffers.
+" Note: Normally, :cwindow jumps to the quickfix window if the command opens it
+" (but not if it's already open). However, as part of the autocmd, this doesn't
+" seem to happen.
+"autocmd QuickFixCmdPost [^l]* nested copen
