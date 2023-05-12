@@ -31,7 +31,7 @@ set diffopt=vertical
 set clipboard=unnamed
 set nornu
 set number
-set shell=$COMSPEC "
+"set shell=$COMSPEC "
 
 "space leader
 let mapleader = " "
@@ -45,8 +45,8 @@ nnoremap <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
 map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>M
 
 "Put on line below
-nnoremap <c-j> :pu<CR>
-nnoremap <c-k> :pu!<CR>
+"nnoremap <c-j> :pu<CR>
+"nnoremap <c-k> :pu!<CR>
 
 if executable('rg')
     let g:rg_derive_root='true'
@@ -103,11 +103,11 @@ vnoremap v V
 vnoremap <C-C> "+y
 
 "make certain characters undoable in insert mode
-inoremap , ,<c-g>u
-inoremap . .<c-g>u
-inoremap [ [<c-g>u
-inoremap ! !<c-g>u
-inoremap ? ?<c-g>u
+"inoremap , ,<c-g>u
+"inoremap . .<c-g>u
+"inoremap [ [<c-g>u
+"inoremap ! !<c-g>u
+"inoremap ? ?<c-g>u
 
 "ability to move highlighted lines up and down
 vnoremap J :m '>+1<CR>gv=gv
