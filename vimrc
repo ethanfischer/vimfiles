@@ -21,7 +21,8 @@ set foldlevelstart=99 "open all folds
 set encoding=utf8
 set guioptions-=a
 set diffopt=vertical
-""set autoread
+set autoread
+au FocusGained * :checktime
 
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
@@ -30,6 +31,7 @@ set diffopt=vertical
 "is causing lags in Visual Studio
 "https://github.com/VsVim/VsVim/issues/2035
 set clipboard=unnamed
+set nu
 set rnu
 set shell=$COMSPEC "
 
@@ -62,6 +64,7 @@ endif
 " Quickly open/reload vimrc
 nnoremap <leader>rc :tabe $HOME/vimfiles/vimrc<CR>  
 nnoremap <leader>grc :tabe $HOME/vimfiles/gvimrc<CR>  
+nnoremap <leader>vrc :tabe $HOME/.vsvimrc<CR>  
 nnoremap <leader>nrc :tabe $HOME/appdata/local/nvim/init.vim<CR>  
 nnoremap <leader>so :source $HOME/vimfiles/vimrc<CR>
 nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
@@ -129,6 +132,10 @@ vnoremap K :m '<-2<CR>gv=gv
 "recent files
 nnoremap <leader>? :browse oldfiles<CR>
 
+"unity debug log
+"nnoremap <leader>db op0iDebug.Log($"{A}");
+nnoremap <leader>db oDebug.Log($"{}");hhhP0wf{iPpa:0w
+
 "Remove empty lines
 "g/^$/d
 
@@ -173,3 +180,44 @@ command Mm MergeMaster
     "open the other file in the other split (ctrl-p, find file)
     "in one of the splits, enter :windo diffthis
     "https://old.reddit.com/r/vim/comments/hjblbb/vimdiff_builtin_tool_to_compare_two_or_more_files/
+    
+"Surround VSVim bindings
+"https://github.com/VsVim/VsVim/issues/1474#issuecomment-417782010
+" Surround simulating bindings
+nnoremap s) ciw(<C-r>")<Esc>
+nnoremap s] ciw[<C-r>"]<Esc>
+nnoremap s} ciw{<C-r>"}<Esc>
+nnoremap s> ciw<lt><C-r>"><Esc>
+nnoremap s" ciw"<C-r>""<Esc>
+nnoremap s' ciw'<C-r>"'<Esc>
+nnoremap sw) ciW(<C-r>")<Esc>
+nnoremap sw] ciW[<C-r>"]<Esc>
+nnoremap sw} ciW{<C-r>"}<Esc>
+nnoremap sw> ciW<lt><C-r>"><Esc>
+nnoremap sw" ciW"<C-r>""<Esc>
+nnoremap sw' ciW'<C-r>"'<Esc>
+
+" Surround delete bindings
+"nnoremap ds) vi(dvhp
+"nnoremap ds] vi[dvhp
+"nnoremap ds} vi{dvhp
+"nnoremap ds> vi<dvhp
+"nnoremap ds" vi"dvhp
+"nnoremap ds' vi'dvhp
+
+" Surround change bindings
+"nnoremap cs"' vi"oh<Esc>msvi"l<Esc>cl'<Esc>`scl'<Esc>
+"nnoremap cs'" vi'oh<Esc>msvi'l<Esc>cl"<Esc>`scl"<Esc>
+
+" Surround visual selected text
+vnoremap S" c"<C-r>""<Esc>
+vnoremap S' c"<C-r>"'<Esc>
+vnoremap S) c(<C-r>")<Esc>
+vnoremap S] c[<C-r>"]<Esc>
+vnoremap S} c{<C-r>"}<Esc>
+vnoremap S{ c{<C-r>"}<Esc>
+vnoremap S> c<lt><C-r>"><Esc>
+vnoremap S* c/*<C-r>"*/<Esc>
+"vnoremap St c<lt>div><CR><C-r>"<Esc>
+" Surround in div tag and edit tag
+vnoremap St c<lt>div><CR><C-r>"<Esc>`<lt>lcw
