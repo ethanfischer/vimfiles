@@ -27,7 +27,7 @@ au FocusGained * :checktime
 "set colorcolumn=80
 "highlight ColorColumn ctermbg=0 
 
-"set clipboard=unnamed Disabling temporarily so I can figure out if clipboard
+set clipboard=unnamed "Disabling temporarily so I can figure out if clipboard
 "is causing lags in Visual Studio
 "https://github.com/VsVim/VsVim/issues/2035
 set clipboard=unnamed
@@ -72,6 +72,7 @@ nnoremap <leader>gso :source $HOME/vimfiles/gvimrc<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :q!<CR>
 nnoremap <c-s> :w<CR>
+inoremap <c-s> <C-O>:w<CR>
 nnoremap <c-t> :tabe<CR>
 "VStudio forward and back mappings
 nnoremap <C--> <C-o>  
@@ -142,7 +143,11 @@ nnoremap <leader>db oDebug.Log($"{}");hhhP0wf{iPpa:0w
 "Reload vimrc on save
 "autocmd! bufwritepost .vimrc source %
 
-
+"good to know:
+    "nnoremap stands for normal-no-recursive-map
+    "browse oldfiles brings up recently edited files
+    "
+nnoremap <leader>? :browse oldfiles<CR>
 "Auto insert matching brace, quote, etc
 "inoremap { {<CR>}<Esc>O
 "inoremap ( ()<Esc>ha
