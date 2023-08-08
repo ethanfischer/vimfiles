@@ -73,7 +73,7 @@ nnoremap <c-f> :Rg<Space>
 nnoremap <leader>9 :tabprev<CR>
 nnoremap <leader>0 :tabnext<CR>
 nnoremap <leader>dd :%d<CR> "delete all lines in file
-nnoremap <leader>vv ggVG "highlight all lines in file
+nnoremap <leader>yy :%y<CR>
 
 nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
@@ -81,7 +81,7 @@ nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
 
 "format json
-nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
+nnoremap <leader>fj :%!jq .<CR>
 "remove escape characters and starting and ending quotes from copied json
 nnoremap <leader>/j V:s/\\//g0x$x<CR>
 
@@ -144,3 +144,5 @@ command CheckoutPrevious G checkout -
 command Chp CheckoutPrevious
 command MergeMaster G checkout master | G pull | G checkout - | G merge master
 command Mm MergeMaster
+
+nnoremap <C-B> :!cargo run<CR>
