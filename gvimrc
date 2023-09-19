@@ -38,7 +38,6 @@ Plug 'scrooloose/nerdtree'
 Plug 'liuchengxu/vim-which-key'
 Plug 'tpope/vim-commentary'
 Plug 'andrewradev/sideways.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'bling/vim-airline'
 Plug 'pedrohdz/vim-yaml-folds'
 Plug 'sagarrakshe/toggle-bool'
@@ -73,9 +72,6 @@ nnoremap <leader>sp :edit!~/Documents/Notes/ScratchPad.txt<CR>
 "nnoremap <silent><leader> :WhichKey '<Space>'<CR>
 "nnoremap <c-l> :SidewaysRight<CR>
 "nnoremap <c-h> :SidewaysLeft<CR>
-"nmap gd <Plug>(coc-definition)
-"nmap <silent> gi <Plug>(coc-implementation)
-"nmap <silent> gr <Plug>(coc-references)
 
 "toggle bool
 noremap <c-a> :ToggleBool<CR>
@@ -83,12 +79,6 @@ noremap <c-a> :ToggleBool<CR>
 "checkbox
 "default is leader tt
 nnoremap <leader><enter> :ToggleCB<CR>
-
-
-set statusline^=%{coc#status()}
-let g:airline_section_z = ''
-let g:airline_section_y = ''
-let g:airline_section_warning=""
 
 
 "Autocomplete mappings inspired by this link but slightly tweaked to my liking
