@@ -77,7 +77,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -164,6 +164,31 @@ function pr() {
 
 setopt auto_cd
 cdpath=($HOME $HOME/repos $HOME/repos/ICS)
+
+# Change cursor shape for vi-mode
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]]; then
+    echo -ne "\e[2 q"
+  elif [[ ${KEYMAP} == main ]]; then
+    echo -ne "\e[6 q"
+  fi
+  zle reset-prompt
+  zle -R
+}
+
+zle -N zle-keymap-select
+zle-line-init() {
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[6 q"
+}
+zle -N zle-line-init
+KEYTIMEOUT=1
+#end change cursor shape for vi-mode
+
+# accept autosuggestions
+bindkey "^[[Z" autosuggest-accept
+# End accept autosuggestions
+
 
 
 
