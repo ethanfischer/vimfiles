@@ -99,6 +99,10 @@ nnoremap Y y$
 nnoremap V v$
 vnoremap v V
 
+"don't jump when yanking
+"vnoremap y y']
+
+
 " CTRL-C and are Copy to windows clipboard
 vnoremap <C-C> "+y
 
