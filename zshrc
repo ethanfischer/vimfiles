@@ -114,8 +114,9 @@ source $ZSH/oh-my-zsh.sh
 #
 alias smxg="cd ~/Repos/ICS/InContext.SMXGo"
 alias smxgu="cd ~/Repos/ICS/InContext.SMXGo/unityprojects/smxgo_unityproject"
+alias eman="cd ~/Repos/ICS/InContext.Everyman/trunk"
 alias lg="lazygit"
-alias alie="nvim ~/.zshrc"
+alias alie="nvim ~/vimfiles/zshrc"
 alias sp="nvim ~/Documents/Notes/ScratchPad.txt"
 alias vim=nvim
 alias e.="open ."
@@ -143,7 +144,8 @@ alias build="dotnet build perfaware/part2/HaversineProcessor/HaversineProcessor.
 alias run="perfaware/part2/HaversineProcessor/HaversineProcessor/bin/Debug/net7.0/HaversineProcessor"
 alias pat="grep -A 1 'PAT' ~/Documents/Notes/ScratchPad.txt | tail -n 1 | pbcopy"
 alias ib="xcodebuild -project "unitybuild/Unity-iPhone.xcodeproj" -scheme "Unity-iPhone" -sdk iphoneos build PROVISIONING_PROFILE_SPECIFIER='SMX Go' DEVELOPMENT_TEAM='3644B598RN'"
-alias inst="xcodebuild -project 'unitybuild/Unity-iPhone.xcodeproj' -scheme 'Unity-iPhone' -sdk iphoneos build PROVISIONING_PROFILE_SPECIFIER='SMX Go' DEVELOPMENT_TEAM='3644B598RN' && ios-deploy --bundle /Users/ethanfischer/Library/Developer/Xcode/DerivedData/Unity-iPhone-fjaixfekrmctfegofxkmdtfonveo/Build/Products/Debug-iphoneos/SMXGOLOCAL.app && notif && say 'installed' && big INSTALLED"
+#alias inst="xcodebuild -project 'unitybuild/Unity-iPhone.xcodeproj' -scheme 'Unity-iPhone' -sdk iphoneos build PROVISIONING_PROFILE_SPECIFIER='SMX Go' DEVELOPMENT_TEAM='3644B598RN' && ios-deploy --bundle /Users/ethanfischer/Library/Developer/Xcode/DerivedData/Unity-iPhone-fjaixfekrmctfegofxkmdtfonveo/Build/Products/Debug-iphoneos/SMXGOLOCAL.app && notif && say 'installed' && big INSTALLED"
+alias inst="xcodebuild -project 'unitybuild/Unity-iPhone.xcodeproj' \ CODE_SIGN_IDENTITY="" \ CODE_SIGNING_REQUIRED=NO \ CODE_SIGN_ENTITLEMENTS="" \ CODE_SIGNING_ALLOWED=YES \ DEVELOPMENT_TEAM='3644B598RN' \ -allowProvisioningUpdates \ build && ios-deploy --bundle /Users/ethanfischer/Library/Developer/Xcode/DerivedData/Unity-iPhone-fjaixfekrmctfegofxkmdtfonveo/Build/Products/Debug-iphoneos/SMXGOLOCAL.app && notif && say 'installed' && big INSTALLED"
 alias notif="osascript -e 'display notification \"iOS Install Finished\" with title \"iOS Install Finished\"'"
 alias smxgcl="rm -rf '/Users/ethanfischer/Library/Application Support/InContext Solutions/SMX GO (LOCAL)'"
 alias matrix="cmatrix"
@@ -151,6 +153,10 @@ alias train="sl"
 alias big="figlet $*"
 alias bonsai="cbonsai -l --life=75"
 alias aquarium="asciiquarium"
+alias cs="gh copilot suggest $*"
+alias ce="gh copilot explain $*"
+alias cportal="cd InContext.ClientPortal"
+alias ref="git reflog"
 
 function pr() {
   # Try to create a new PR
