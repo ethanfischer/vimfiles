@@ -117,9 +117,9 @@ alias smxgu="cd ~/Repos/ICS/InContext.SMXGo/unityprojects/smxgo_unityproject"
 alias eman="cd ~/Repos/ICS/InContext.Everyman/trunk"
 alias lg="lazygit"
 alias alie="nvim ~/vimfiles/zshrc"
-alias sp="nvim ~/Documents/Notes/ScratchPad.txt"
+alias sp="nvim ~/ScratchPad.txt"
 alias vim=nvim
-alias e.="open ."
+alias e.="explorer ."
 alias src="source ~/.zshrc"
 alias ics="cd ~/Repos/ICS"
 alias vs="open *.sln"
@@ -157,6 +157,7 @@ alias cs="gh copilot suggest $*"
 alias ce="gh copilot explain $*"
 alias cportal="cd InContext.ClientPortal"
 alias ref="git reflog"
+alias ue="explorer.exe weirdplace2.uproject"
 
 function pr() {
   # Try to create a new PR
