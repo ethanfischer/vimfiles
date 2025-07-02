@@ -118,7 +118,7 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
 "open
-nnoremap <C-o> :open<CR>
+"nnoremap <C-o> :open<CR>
 
 "recent files
 nnoremap <leader>? :browse oldfiles<CR>
