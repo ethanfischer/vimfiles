@@ -112,6 +112,11 @@ inoremap <expr> <enter> pumvisible() ? "\<C-y>" : "\<Enter>"
 "nnoremap <F5> :!%<CR>
 nnoremap <F5> :!cargo run<CR>
 
+" Go back (like Visual Studio Ctrl+-)
+nnoremap <C--> <C-o>
+" Alternative if Ctrl+- doesn't work in your terminal
+nnoremap <C-_> <C-o>
+
 " set highlight to whatever amount of ms
 let g:highlightedyank_highlight_duration = 500
 
