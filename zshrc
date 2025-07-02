@@ -121,7 +121,6 @@ alias sp="nvim /Users/Shared/ScratchPad.txt"
 alias vim=nvim
 alias e.="open ."
 alias src="source ~/.zshrc"
-alias ics="cd ~/Repos/ICS"
 alias vs="open *.sln"
 alias psh="git push"
 alias pl="git pull"
@@ -182,6 +181,15 @@ function pr() {
   echo "pr_url $pr_url"
   # Open the PR in the browser
   open $pr_url
+}
+
+ics() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: ics <name>"
+        return 1
+    fi
+    
+    cd "InContext.$1"
 }
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
