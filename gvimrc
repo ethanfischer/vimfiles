@@ -54,6 +54,7 @@ Plug 'simrat39/rust-tools.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 
+
 " Initialize plugin system
 call plug#end()
 
@@ -149,14 +150,28 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 end
 
-local servers = {
-  rust_analyzer = {}
-}
+nvim_lsp.rust_analyzer.setup({
+  on_attach = on_attach,
+  filetypes = { "rust" },
+  settings = {
+    ["rust-analyzer"] = {}
+  }
+})
 
-for server, config in pairs(servers) do
-  config.on_attach = on_attach
-  nvim_lsp[server].setup(config)
-end
+nvim_lsp.pyright.setup({
+  on_attach = on_attach,
+  filetypes = { "python" },
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        diagnosticMode = "openFilesOnly",
+        typeCheckingMode = "basic"
+      }
+    }
+  }
+})
 
 local cmp = require'cmp'
 cmp.setup {
@@ -169,4 +184,5 @@ cmp.setup {
     { name = 'nvim_lsp' }
   },
 }
+
 EOF
