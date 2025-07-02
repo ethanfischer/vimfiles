@@ -156,6 +156,8 @@ alias cs="gh copilot suggest $*"
 alias ce="gh copilot explain $*"
 alias cportal="cd InContext.ClientPortal"
 alias ref="git reflog"
+alias lsdate="ls -ltr"
+alias lsd="ls -ltr"
 
 function pr() {
   # Try to create a new PR
