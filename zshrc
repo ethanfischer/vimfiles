@@ -159,6 +159,7 @@ alias ptl="cd InContext.Portal"
 alias ref="git reflog"
 alias lsdate="ls -ltr"
 alias lsd="ls -ltr"
+alias notify='tput bel; afplay /System/Library/Sounds/Hero.aiff & terminal-notifier -title "Terminal" -message "Done with task! Exit status: $?"'
 
 function pr() {
   # Try to create a new PR
@@ -227,6 +228,7 @@ bindkey "^[[Z" autosuggest-accept
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/emulator
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/tools
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/platform-tools
+
 #homebrew
 export PATH="/opt/homebrew/bin:$PATH"
 export HOMEBREW_PREFIX="/opt/homebrew"
