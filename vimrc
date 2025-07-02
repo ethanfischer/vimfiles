@@ -84,6 +84,8 @@ nnoremap <leader>l :wincmd l<CR>
 nnoremap <leader>fj :%!jq .<CR>
 "remove escape characters and starting and ending quotes from copied json
 nnoremap <leader>/j V:s/\\//g0x$x<CR>
+"remove windows carraige returns
+noremap <leader>/m :%s/\r//g<CR>
 
 
 "Copy open file path
