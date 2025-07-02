@@ -150,3 +150,14 @@ command MergeMaster G checkout master | G pull | G checkout - | G merge master
 command Mm MergeMaster
 
 nnoremap <C-B> :!cargo run<CR>
+
+" Disable virtual text diagnostics (LSP inline warnings)
+autocmd LspAttach * lua vim.diagnostic.config({ virtual_text = false })
+" Toggle diagnostic virtual text
+nnoremap <leader>dt :lua vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })<CR>
+
+" Disable CoC virtual text
+let g:coc_disable_transparent_cursor = 1
+let g:coc_enable_locationlist = 0
+" Disable ALE virtual text
+let g:ale_virtualtext_cursor = 0
