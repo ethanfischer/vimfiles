@@ -224,3 +224,8 @@ bindkey "^[[Z" autosuggest-accept
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/emulator
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/tools
 export PATH=$PATH:/Users/ethanfischer/Library/Android/sdk/platform-tools
+#homebrew
+export PATH="/opt/homebrew/bin:$PATH"
+export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+export HOMEBREW_REPOSITORY="/opt/homebrew/Homebrew"
