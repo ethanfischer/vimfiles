@@ -5,6 +5,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="/Applications/Xcode.app/Contents/Developer/usr/bin:$PATH"
@@ -37,7 +39,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
+zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
@@ -154,6 +156,11 @@ alias bonsai="cbonsai -l --life=75"
 alias aquarium="asciiquarium"
 alias cs="gh copilot suggest $*"
 alias ce="gh copilot explain $*"
+azb() {
+  build_result=$(az pipelines run --id 140 --output table 2>/dev/null)
+  build_id=$(echo "$build_result" | grep -E '^[0-9]+' | awk '{print $1}')
+  open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
+}
 alias cportal="cd InContext.ClientPortal"
 alias ptl="cd InContext.Portal"
 alias ref="git reflog"
