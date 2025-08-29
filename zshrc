@@ -157,7 +157,10 @@ alias aquarium="asciiquarium"
 alias cs="gh copilot suggest $*"
 alias ce="gh copilot explain $*"
 azb() {
-  build_result=$(az pipelines run --id 140 --output table 2>/dev/null)
+  current_branch=$(git branch --show-current)
+  repo_name=$(git config --get remote.origin.url | awk -F '/' '{print $NF}' | sed 's/.git//g')
+  pipeline_id=$(az pipelines list --output tsv --query "[?name=='$repo_name'].id | [0]" 2>/dev/null)
+  build_result=$(az pipelines run --id "$pipeline_id" --branch "$current_branch" --output table 2>/dev/null)
   build_id=$(echo "$build_result" | grep -E '^[0-9]+' | awk '{print $1}')
   open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
 }
