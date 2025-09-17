@@ -163,3 +163,24 @@ let g:coc_disable_transparent_cursor = 1
 let g:coc_enable_locationlist = 0
 " Disable ALE virtual text
 let g:ale_virtualtext_cursor = 0
+
+" Function to swap the first two parameters of a function call
+function! SwapFunctionParams()
+    let line = getline('.')
+    let col = col('.')
+    
+    " Find the function call pattern: function_name(param1, param2, ...)
+    let pattern = '\(\w\+\s*(\)\([^,()]*\),\s*\([^,()]*\)\(.*)\)'
+    
+    " Try to match the pattern on the current line
+    if match(line, pattern) != -1
+        let new_line = substitute(line, pattern, '\1\3, \2\4', '')
+        call setline('.', new_line)
+        echo "Parameters swapped"
+    else
+        echo "No function call with parameters found on this line"
+    endif
+endfunction
+
+" Map to <leader>, (swap parameters)
+nnoremap <leader>, :call SwapFunctionParams()<CR>
