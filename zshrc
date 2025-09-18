@@ -244,3 +244,7 @@ export PATH="/opt/homebrew/bin:$PATH"
 export HOMEBREW_PREFIX="/opt/homebrew"
 export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
 export HOMEBREW_REPOSITORY="/opt/homebrew/Homebrew"
+
+
+#NOTES:
+# ncdu: great commandline tool for cleaning disk space on mac. Install with homebrew
