@@ -164,6 +164,12 @@ azb() {
   build_id=$(echo "$build_result" | grep -E '^[0-9]+' | awk '{print $1}')
   open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
 }
+azml() {
+  current_branch=$(git branch --show-current)
+  build_result=$(az pipelines run --id 145 --branch "$current_branch" --output table 2>/dev/null)
+  build_id=$(echo "$build_result" | grep -E '^[0-9]+' | awk '{print $1}')
+  open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
+}
 alias cportal="cd InContext.ClientPortal"
 alias ptl="cd InContext.Portal"
 alias ref="git reflog"
