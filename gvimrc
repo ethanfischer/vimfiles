@@ -124,7 +124,6 @@ let g:highlightedyank_highlight_duration = 500
 lua << EOF
 vim.lsp.set_log_level("debug")
 
-local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local opts = { noremap=true, silent=true }
@@ -150,17 +149,21 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 end
 
-nvim_lsp.rust_analyzer.setup({
-  on_attach = on_attach,
-  filetypes = { "rust" },
+vim.lsp.config.rust_analyzer = {
+  cmd = { 'rust-analyzer' },
+  filetypes = { 'rust' },
+  root_markers = { 'Cargo.toml' },
   settings = {
     ["rust-analyzer"] = {}
   }
-})
+}
 
-nvim_lsp.pyright.setup({
-  on_attach = on_attach,
-  filetypes = { "python" },
+vim.lsp.enable('rust_analyzer')
+
+vim.lsp.config.pyright = {
+  cmd = { 'pyright-langserver', '--stdio' },
+  filetypes = { 'python' },
+  root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile' },
   settings = {
     python = {
       analysis = {
@@ -171,6 +174,14 @@ nvim_lsp.pyright.setup({
       }
     }
   }
+}
+
+vim.lsp.enable('pyright')
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    on_attach(vim.lsp.get_client_by_id(args.data.client_id), args.buf)
+  end,
 })
 
 local cmp = require'cmp'
