@@ -161,8 +161,6 @@ nnoremap <leader>dt :lua vim.diagnostic.config({ virtual_text = not vim.diagnost
 " Disable CoC virtual text
 let g:coc_disable_transparent_cursor = 1
 let g:coc_enable_locationlist = 0
-" Disable ALE virtual text
-let g:ale_virtualtext_cursor = 0
 
 " Function to swap the first two parameters of a function call
 function! SwapFunctionParams()
