@@ -118,8 +118,10 @@ alias smxg="cd ~/Repos/ICS/InContext.SMXGo"
 alias smxgu="cd ~/Repos/ICS/InContext.SMXGo/unityprojects/smxgo_unityproject"
 alias eman="cd ~/Repos/ICS/InContext.Everyman/trunk"
 alias lg="lazygit"
+#alias slg="sudo lazygit"
 alias alie="nvim ~/vimfiles/zshrc"
-alias sp="nvim /Users/Shared/ScratchPad.txt"
+alias sp="nvim /Users/Shared/repos/ScratchPad/ScratchPad.txt"
+alias ssp="sudo nvim /Users/Shared/ScratchPad.txt"
 alias vim=nvim
 alias e.="open ."
 alias src="source ~/.zshrc"
@@ -252,5 +254,9 @@ export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
 export HOMEBREW_REPOSITORY="/opt/homebrew/Homebrew"
 
 
+export HAXE_STD_PATH="/opt/homebrew/lib/haxe/std"
+
+
 #NOTES:
 # ncdu: great commandline tool for cleaning disk space on mac. Install with homebrew
+#
