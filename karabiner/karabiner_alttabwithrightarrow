@@ -1,0 +1,21 @@
+{
+    "description": "Alt tab with right cmd arrow",
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "left_arrow",
+                "modifiers": {
+                    "mandatory": ["right_command"],
+                    "optional": ["any"]
+                }
+            },
+            "to": [
+                {
+                    "key_code": "tab",
+                    "modifiers": ["right_command"]
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
