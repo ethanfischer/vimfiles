@@ -260,3 +260,5 @@ export HAXE_STD_PATH="/opt/homebrew/lib/haxe/std"
 #NOTES:
 # ncdu: great commandline tool for cleaning disk space on mac. Install with homebrew
 #
+# Needed for Claude Code
+export PATH="$HOME/.local/bin:$PATH"
