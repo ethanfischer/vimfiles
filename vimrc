@@ -153,10 +153,12 @@ command Mm MergeMaster
 
 nnoremap <C-B> :!cargo run<CR>
 
-" Disable virtual text diagnostics (LSP inline warnings)
-autocmd LspAttach * lua vim.diagnostic.config({ virtual_text = false })
-" Toggle diagnostic virtual text
-nnoremap <leader>dt :lua vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })<CR>
+" Disable virtual text diagnostics (LSP inline warnings) - Neovim only
+if has('nvim')
+    autocmd LspAttach * lua vim.diagnostic.config({ virtual_text = false })
+    " Toggle diagnostic virtual text
+    nnoremap <leader>dt :lua vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })<CR>
+endif
 
 " Disable CoC virtual text
 let g:coc_disable_transparent_cursor = 1
