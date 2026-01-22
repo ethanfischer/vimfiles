@@ -173,11 +173,14 @@ azml() {
   open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
 }
 alias cportal="cd InContext.ClientPortal"
+alias cpl="cd InContext.ClientPortal"
 alias ptl="cd InContext.Portal"
 alias ref="git reflog"
 alias lsdate="ls -ltr"
 alias lsd="ls -ltr"
 alias notify='tput bel; afplay /System/Library/Sounds/Hero.aiff & terminal-notifier -title "Terminal" -message "Done with task! Exit status: $?"'
+alias cc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude' # fixes this regression https://github.com/anthropics/claude-code/issues/16727
+alias ccr='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --resume'
 
 function pr() {
   # Try to create a new PR
@@ -210,8 +213,12 @@ ics() {
         echo "Usage: ics <name>"
         return 1
     fi
-    
+
     cd "InContext.$1"
+}
+
+v() {
+    vim $(fd "$1")
 }
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
