@@ -1,20 +1,11 @@
-Set-Location C:\Users\ethan.fischer\GitProjects\ICS
+Set-Location C:\Users\ethan\repos
 
-Set-Alias ics GoToICS
+Set-Alias wp WeirdPlace
 Set-Alias e. ExplorerHere
 #Set-Alias gl GLFunction
 #Set-Alias vf VFFunction
 Set-Alias cmderr CMDERRFunction
-Set-Alias smx SMXFunction
-Set-Alias smxw SMXWFunction
-Set-Alias smxa SMXAFunction
-Set-Alias smxg SMXGFunction
-Set-Alias em EMFunction
 Set-Alias cleanem CLEANEMFunction
-Set-Alias -Name cportal -Value CPFunction -Option AllScope
-Set-Alias sg SGFunction
-Set-Alias sgvrtk SGVRTKFunction
-Set-Alias tt TTFunction
 Set-Alias CLFunction CLFunction
 Set-Alias nuke NUKEFunction
 Set-Alias nukes NUKESFunction
@@ -43,11 +34,17 @@ Set-Alias cm CMFunction
 Set-Alias pss PSSFunction
 Set-Alias pr CreatePR
 Set-Alias lg LazyGitFunction
+Set-Alias src SRCFunction
+Set-Alias vim VimFunction
+Set-Alias alie AlieFunction
+Set-Alias cc CCFunction
+Set-Alias ccr CCRFunction
+Set-Alias ccc CCCFunction
 Set-Alias gpt "python3 -m EdgeGPT --cookie-file C:\Users\ethan.fischer\AppData\Local\Microsoft\Edge\cookies.json --rich"
 Set-Alias azbuild "az pipelines build queue --definition-name InContext.Identity --open"
 
-function GoToICS {
-    cd C:\Users\ethan.fischer\GitProjects\ICS
+function WeirdPlace {
+    cd ~/repos/weirdplace2
 }
 function ExplorerHere {
     explorer .
@@ -61,35 +58,8 @@ function VFFunction {
 function CMDERRFunction {
     cd /d "%CMDER_ROOT%"
 }
-function SMXFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.SMX2"
-}
-function SMXWFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.SMX2.Webservices"
-}
-function SMXAFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.ShopperMXAnywhere"
-}
-function SMXGFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.SMXGo"
-}
-function EMFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.Everyman\trunk"
-}
 function CLEANEMFunction {
     #for /F %d in ('dir /AD /B "bin" "obj" /S') do rmdir /S /Q %d
-}
-function CPFunction {
-    cd "C:\Users\ethan.fischer\GitProjects\ICS\InContext.ClientPortal"
-}
-function SGFunction {
-    cd /d "D:\GitProjects\SurrealGame2019"
-}
-function SGVRTKFunction {
-    cd /d "D:\GitProjects\Surreal Game\surreal_game\Assets\VRTK"
-}
-function TTFunction {
-    cd /d "D:\GitProjects\TiffinTown"
 }
 function NUKEFunction {
     git reset --hard 
@@ -182,7 +152,31 @@ function LazyGitFunction {
     lazygit
 }
 
-Import-Module posh-git
-oh-my-posh init pwsh --config C:\Users\ethan.fischer\AppData\Local\Programs\oh-my-posh\themes/hotstick.minimal.omp.json | Invoke-Expression
+function SRCFunction {
+    . "C:/Users/ethan/repos/vimfiles/Microsoft.PowerShell_profile.ps1"
+}
+
+function VimFunction {
+    nvim $args
+}
+
+function AlieFunction {
+    nvim C:\Users\ethan\repos\vimfiles\Microsoft.PowerShell_profile.ps1
+}
+
+function CCFunction {
+    claude $args
+}
+
+function CCRFunction {
+    claude --resume
+}
+
+function CCCFunction {
+    claude --continue
+}
+
+#Import-Module posh-git
+#oh-my-posh init pwsh --config C:\Users\ethan.fischer\AppData\Local\Programs\oh-my-posh\themes/hotstick.minimal.omp.json | Invoke-Expression
 #Import-Module oh-my-posh
 #Set-PoshPrompt -Theme hotstick.minimal
