@@ -1,0 +1,72 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash:grep *",
+      "Bash:rg *",
+      "Bash:find *",
+      "Bash:sed -n *",
+      "Bash:head *",
+      "Bash:tail *",
+      "Bash:cat *"
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": false,
+    "code-review@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "greptile@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true
+  },
+  "autoUpdatesChannel": "latest",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -c \"(New-Object Media.SoundPlayer 'C:\\Windows\\Media\\Windows Notify.wav').PlaySync()\""
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": []
+      },
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -c \"(New-Object Media.SoundPlayer 'C:\\Windows\\Media\\Windows Balloon.wav').PlaySync()\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -c \"(New-Object Media.SoundPlayer 'C:\\Windows\\Media\\Windows Print complete.wav').PlaySync()\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": []
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": []
+      }
+    ]
+  }
+}
