@@ -181,6 +181,7 @@ alias lsd="ls -ltr"
 alias notify='tput bel; afplay /System/Library/Sounds/Hero.aiff & terminal-notifier -title "Terminal" -message "Done with task! Exit status: $?"'
 alias cc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude' # fixes this regression https://github.com/anthropics/claude-code/issues/16727
 alias ccr='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --resume'
+alias cleanmymac='ncdu /'
 
 function pr() {
   # Try to create a new PR
