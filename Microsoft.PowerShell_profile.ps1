@@ -42,6 +42,7 @@ Set-Alias ccr CCRFunction
 Set-Alias ccc CCCFunction
 Set-Alias gpt "python3 -m EdgeGPT --cookie-file C:\Users\ethan.fischer\AppData\Local\Microsoft\Edge\cookies.json --rich"
 Set-Alias azbuild "az pipelines build queue --definition-name InContext.Identity --open"
+Set-Alias spd ScratchPadFunction
 
 function WeirdPlace {
     cd ~/repos/weirdplace2
@@ -174,6 +175,9 @@ function CCRFunction {
 
 function CCCFunction {
     claude --continue
+}
+function ScratchPadFunction {
+    vim ~/scratchpad.txt
 }
 
 #Import-Module posh-git
