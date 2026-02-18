@@ -50,6 +50,12 @@ function WeirdPlace {
 function ExplorerHere {
     explorer .
 }
+function .. {
+    Set-Location ..
+}
+function ... {
+    Set-Location ../..
+}
 function GLFunction {
     git log --oneline --all --graph --decorate  $*
 }
@@ -180,7 +186,113 @@ function ScratchPadFunction {
     vim ~/scratchpad.txt
 }
 
-#Import-Module posh-git
-#oh-my-posh init pwsh --config C:\Users\ethan.fischer\AppData\Local\Programs\oh-my-posh\themes/hotstick.minimal.omp.json | Invoke-Expression
-#Import-Module oh-my-posh
-#Set-PoshPrompt -Theme hotstick.minimal
+# zsh-like shell behavior for PowerShell:
+# - syntax highlighting
+# - autosuggestions
+# - vi mode (+ cursor shape changes)
+if (-not (Get-Command Set-PSReadLineOption -ErrorAction SilentlyContinue)) {
+    if (Get-Module -ListAvailable -Name PSReadLine) {
+        try {
+            Import-Module PSReadLine -ErrorAction Stop
+        } catch {
+            # Continue loading profile even if PSReadLine import conflicts.
+        }
+    }
+}
+
+if (Get-Command Set-PSReadLineOption -ErrorAction SilentlyContinue) {
+
+    Set-PSReadLineOption -EditMode Vi
+    Set-PSReadLineOption -ViModeIndicator Cursor
+    Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+
+    $psrlOptionParams = (Get-Command Set-PSReadLineOption).Parameters.Keys
+    if ($psrlOptionParams -contains 'PredictionSource') {
+        try {
+            Set-PSReadLineOption -PredictionSource History
+        } catch {
+            # Older/non-VT consoles can reject prediction mode.
+        }
+    }
+    if ($psrlOptionParams -contains 'PredictionViewStyle') {
+        try {
+            Set-PSReadLineOption -PredictionViewStyle InlineView
+        } catch {
+            # Ignore if prediction is unavailable in the current host.
+        }
+    }
+
+    Set-PSReadLineOption -Colors @{
+        Command   = 'Yellow'
+        Number    = 'White'
+        String    = 'DarkCyan'
+        Operator  = 'Gray'
+        Variable  = 'Green'
+        Parameter = 'Cyan'
+        Type      = 'DarkYellow'
+        Comment   = 'DarkGray'
+    }
+
+    $psrlKeyHandlerFns = (Get-Command Set-PSReadLineKeyHandler).Parameters['Function'].Attributes.ValidValues
+    if ($psrlKeyHandlerFns -contains 'AcceptSuggestion') {
+        # Match zsh Shift+Tab autosuggestion accept behavior on newer PSReadLine.
+        Set-PSReadLineKeyHandler -Chord 'Shift+Tab' -Function AcceptSuggestion
+    }
+    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+    Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
+        param($key, $arg)
+
+        $line = $null
+        $cursor = $null
+        [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+        $candidate = $line.Trim()
+
+        if ($candidate) {
+            $isQuoted = (($candidate.StartsWith("'") -and $candidate.EndsWith("'")) -or ($candidate.StartsWith('"') -and $candidate.EndsWith('"')))
+            if (($candidate -notmatch '\s') -or $isQuoted) {
+                $pathCandidate = if ($isQuoted) { $candidate.Substring(1, $candidate.Length - 2) } else { $candidate }
+                if (Test-Path -LiteralPath $pathCandidate -PathType Container) {
+                    $escapedPath = $pathCandidate.Replace("'", "''")
+                    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+                    [Microsoft.PowerShell.PSConsoleReadLine]::Insert("Set-Location -LiteralPath '$escapedPath'")
+                    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+                    return
+                }
+            }
+        }
+
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+    }
+}
+
+# Git prompt/status enhancements.
+if (Get-Module -ListAvailable -Name posh-git) {
+    Import-Module posh-git -ErrorAction SilentlyContinue
+}
+
+# Prompt theme.
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+    $ompTheme = $null
+    if ($env:POSH_THEMES_PATH) {
+        $candidate = Join-Path $env:POSH_THEMES_PATH 'hotstick.minimal.omp.json'
+        if (Test-Path $candidate) {
+            $ompTheme = $candidate
+        }
+    }
+    if (-not $ompTheme) {
+        $candidate = Join-Path $env:LOCALAPPDATA 'Programs\oh-my-posh\themes\hotstick.minimal.omp.json'
+        if (Test-Path $candidate) {
+            $ompTheme = $candidate
+        }
+    }
+    try {
+        if ($ompTheme) {
+            oh-my-posh init pwsh --config $ompTheme 2>$null | Invoke-Expression
+        } else {
+            oh-my-posh init pwsh 2>$null | Invoke-Expression
+        }
+    } catch {
+        # Keep profile load resilient if oh-my-posh cannot write temp init files.
+    }
+}
