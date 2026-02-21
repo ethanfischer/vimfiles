@@ -60,6 +60,11 @@ if executable('rg')
     let g:rg_derive_root='true'
 endif
 
+" vim-plug plugin section
+call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-sensible'
+call plug#end()
+
 
 " Quickly open/reload vimrc
 nnoremap <leader>rc :tabe $HOME/vimfiles/vimrc<CR>  
@@ -93,8 +98,8 @@ nnoremap <leader>l :wincmd l<CR>
 "format json
 nnoremap <leader>fj :%!python -m json.tool<CR> :set syntax=json<CR>
 "remove escape characters and starting and ending quotes from copied json
-nnoremap <leader>/j V:s/\\//g0x$x<CR>
-nnoremap <leader>/jrn V:s/\\r\\n//g0x$x<CR>
+nnoremap <leader>/j V:s/\\//g0x$x<CR>
+nnoremap <leader>/jrn V:s/\\r\\n//g0x$x<CR>
 "toggle blackslash/forwardslash in selection
 vnoremap <leader>// :s,\\,/,g<CR>
 vnoremap <leader>\\ :s,/,\\,g<CR>
