@@ -55,7 +55,7 @@ Plug 'vimwiki/vimwiki'
 
 call plug#end()
 
-colorscheme gruvbox
+silent! colorscheme gruvbox
 set background=dark
 "ultra dark
 "highlight Normal guibg=black guifg=white

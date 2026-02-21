@@ -60,10 +60,9 @@ if executable('rg')
     let g:rg_derive_root='true'
 endif
 
-" vim-plug plugin section
-call plug#begin('~/.vim/plugged')
-Plug 'tpope/vim-sensible'
-call plug#end()
+if has('nvim')
+    source C:/Users/ethan/repos/vimfiles/gvimrc
+endif
 
 
 " Quickly open/reload vimrc
