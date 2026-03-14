@@ -52,8 +52,20 @@ Plug 'jkramer/vim-checkbox'
 "Plug 'chaoren/vim-wordmotion'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'vimwiki/vimwiki'
+Plug 'davidgranstrom/scnvim'
 
 call plug#end()
+
+" ── scnvim ────────────────────────────────────────────────
+let g:scnvim_sclang_executable = 'C:\Program Files\SuperCollider-3.14.1\sclang.exe'
+let g:scnvim_postwin_auto_toggle = 0
+
+augroup scnvim_keys
+  autocmd!
+  autocmd FileType supercollider nmap <buffer> <leader>st :SCNvimStart<CR>
+  autocmd FileType supercollider nmap <buffer> <leader>sk :SCNvimStop<CR>
+  autocmd FileType supercollider nmap <buffer> <leader>pw <Plug>(scnvim-postwindow-toggle)
+augroup END
 
 silent! colorscheme gruvbox
 set background=dark
