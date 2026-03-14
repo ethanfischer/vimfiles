@@ -177,6 +177,7 @@ function CCFunction {
 
 function CCRFunction {
     claude --resume
+    #~\.claude\claude-sessions.ps1
 }
 
 function CCCFunction {
