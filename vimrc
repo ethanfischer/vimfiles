@@ -184,3 +184,17 @@ endfunction
 
 " Map to <leader>, (swap parameters)
 nnoremap <leader>, :call SwapFunctionParams()<CR>
+
+let g:private_mode = 0
+function! TogglePrivateMode()
+if g:private_mode
+  hi Normal ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE
+  let g:private_mode = 0
+  echo "Private mode OFF"
+else
+  hi Normal ctermfg=black ctermbg=black guifg=black guibg=black
+  let g:private_mode = 1
+  echo ""
+endif
+endfunction
+nnoremap <Leader>p :call TogglePrivateMode()<CR>
