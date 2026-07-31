@@ -145,7 +145,7 @@ alias nuke="git reset --hard ; git clean -fd"
 alias insta="adb install unitybuild.apk"
 alias build="dotnet build perfaware/part2/HaversineProcessor/HaversineProcessor.sln"
 alias run="perfaware/part2/HaversineProcessor/HaversineProcessor/bin/Debug/net7.0/HaversineProcessor"
-alias pat="grep -A 1 'PAT' /Users/Shared/ScratchPad.txt | tail -n 1 | pbcopy"
+alias pat='security find-generic-password -a "$USER" -s azure-devops-pat -w | pbcopy'
 alias ib="xcodebuild -project "unitybuild/Unity-iPhone.xcodeproj" -scheme "Unity-iPhone" -sdk iphoneos build PROVISIONING_PROFILE_SPECIFIER='SMX Go' DEVELOPMENT_TEAM='3644B598RN'"
 #alias inst="xcodebuild -project 'unitybuild/Unity-iPhone.xcodeproj' -scheme 'Unity-iPhone' -sdk iphoneos build PROVISIONING_PROFILE_SPECIFIER='SMX Go' DEVELOPMENT_TEAM='3644B598RN' && ios-deploy --bundle /Users/ethanfischer/Library/Developer/Xcode/DerivedData/Unity-iPhone-fjaixfekrmctfegofxkmdtfonveo/Build/Products/Debug-iphoneos/SMXGOLOCAL.app && notif && say 'installed' && big INSTALLED"
 alias inst="xcodebuild -project 'unitybuild/Unity-iPhone.xcodeproj' \ CODE_SIGN_IDENTITY="" \ CODE_SIGNING_REQUIRED=NO \ CODE_SIGN_ENTITLEMENTS="" \ CODE_SIGNING_ALLOWED=YES \ DEVELOPMENT_TEAM='3644B598RN' \ -allowProvisioningUpdates \ build && ios-deploy --bundle /Users/ethanfischer/Library/Developer/Xcode/DerivedData/Unity-iPhone-fjaixfekrmctfegofxkmdtfonveo/Build/Products/Debug-iphoneos/SMXGOLOCAL.app && notif && say 'installed' && big INSTALLED"
@@ -166,6 +166,9 @@ azb() {
   build_id=$(echo "$build_result" | grep -E '^[0-9]+' | awk '{print $1}')
   open "https://incontextsolutions.visualstudio.com/ICS/_build/results?buildId=$build_id&view=results"
 }
+amlb() {
+    azml
+}
 azml() {
   current_branch=$(git branch --show-current)
   build_result=$(az pipelines run --id 145 --branch "$current_branch" --output table 2>/dev/null)
@@ -181,7 +184,35 @@ alias lsd="ls -ltr"
 alias notify='tput bel; afplay /System/Library/Sounds/Hero.aiff & terminal-notifier -title "Terminal" -message "Done with task! Exit status: $?"'
 alias cc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude' # fixes this regression https://github.com/anthropics/claude-code/issues/16727
 alias ccr='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --resume'
+alias ccc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --continue'
 alias cleanmymac='ncdu /'
+alias amlprod='export ICS_TOOLS_KEY="$(security find-generic-password -a "$USER" -s ics-tools-key -w)"
+az account set --subscription "5dcd112c-4999-44be-88d3-8f71332c6893"
+export AZURE_RESOURCE_GROUP="computer-vision"
+export AZURE_WORKSPACE="MultiStageCV-Prod"
+export AZURE_COMPUTE_CLUSTER="fallback-gpu-nd40"
+export AZURE_ENVIRONMENT_NAME="train-classification"
+export AZURE_ENVIRONMENT_VERSION="1"
+export AZURE_SUBSCRIPTION_ID="5dcd112c-4999-44be-88d3-8f71332c6893"
+export AZURE_DATASTORE="datasets_prod"
+export MODEL_SEGMENT_NAME="sweetsnacks-USA-307.1"
+export SHOPPERMX_PRODUCTS_BASE_URL="https://app.shoppermx.com"
+export SHOPPERMX_THUMBNAILS_BASE_URL="https://prod-smx-everyman.azurewebsites.net"
+export INCONTEXT_PORTAL_API_URL="https://prod-ics-portal-app.azurewebsites.net"'
+alias amldev='export ICS_TOOLS_KEY="$(security find-generic-password -a "$USER" -s ics-tools-key -w)"
+az account set --subscription "06c91f00-f9e6-48b2-beb5-62e618ed6e5b"
+export AZURE_RESOURCE_GROUP="dev-vision"
+export AZURE_WORKSPACE="Sauron-Dev-III"
+export AZURE_COMPUTE_CLUSTER="NVIDIATeslaV100-8x"
+export AZURE_ENVIRONMENT_NAME="train-classification"
+export AZURE_ENVIRONMENT_VERSION="1"
+export AZURE_SUBSCRIPTION_ID="06c91f00-f9e6-48b2-beb5-62e618ed6e5b"
+export AZURE_DATASTORE="datasets_dev"
+export MODEL_SEGMENT_NAME="sweetsnacks-USA-792.1"
+export SHOPPERMX_PRODUCTS_BASE_URL="https://dev-app.shoppermx.com"
+export SHOPPERMX_THUMBNAILS_BASE_URL="https://dev-everyman-centralus-incontext-everyman.azurewebsites.net"
+export INCONTEXT_PORTAL_API_URL="https://dev-app.shoppermx.com"
+export SAVE_ALL_TRANSFORMS=true'
 
 function pr() {
   # Try to create a new PR
