@@ -139,8 +139,14 @@ alias smxgd="cd ~/Library/Application\ Support/InContext\ Solutions/SMX\ GO\ \(L
 alias ch-="git checkout -"
 alias pss="git push -u origin HEAD"
 alias ch="git checkout $*"
-alias mm="git checkout master ; git pull ; git checkout - ; git merge master"
-alias wmm="git checkout main ; git pull ; git checkout - ; git merge main"
+mm() {
+  local branch
+  branch=$(git ls-remote --symref origin HEAD 2>/dev/null | awk '/^ref:/{sub("refs/heads/","",$2); print $2; exit}')
+  [ -z "$branch" ] && branch=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')
+  [ -z "$branch" ] && branch=main
+  git fetch origin "$branch" && git merge FETCH_HEAD
+}
+alias wmm=mm
 alias nuke="git reset --hard ; git clean -fd"
 alias insta="adb install unitybuild.apk"
 alias build="dotnet build perfaware/part2/HaversineProcessor/HaversineProcessor.sln"
@@ -182,9 +188,9 @@ alias ref="git reflog"
 alias lsdate="ls -ltr"
 alias lsd="ls -ltr"
 alias notify='tput bel; afplay /System/Library/Sounds/Hero.aiff & terminal-notifier -title "Terminal" -message "Done with task! Exit status: $?"'
-alias cc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude' # fixes this regression https://github.com/anthropics/claude-code/issues/16727
-alias ccr='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --resume'
-alias ccc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --continue'
+#alias cc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude' # fixes this regression https://github.com/anthropics/claude-code/issues/16727
+#alias ccr='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --resume'
+#alias ccc='env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color claude --continue'
 alias cleanmymac='ncdu /'
 alias amlprod='export ICS_TOOLS_KEY="$(security find-generic-password -a "$USER" -s ics-tools-key -w)"
 az account set --subscription "5dcd112c-4999-44be-88d3-8f71332c6893"
@@ -301,3 +307,53 @@ export HAXE_STD_PATH="/opt/homebrew/lib/haxe/std"
 #
 # Needed for Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+
+
+# Work Claude Code via ICS Azure Foundry. Foundry vars scoped per-process only.
+# Personal desktop app + any non-cc claude stay on subscription.
+_ccwork() {
+    # Long-lived Foundry API key beats Entra tokens that expire mid-session.
+    # Falls back to az Entra default chain if key not in keychain.
+    local -a auth
+    local key
+    key=$(security find-generic-password -a "$USER" -s foundry-api-key -w 2>/dev/null)
+    [ -n "$key" ] && auth=(ANTHROPIC_FOUNDRY_API_KEY="$key")
+    env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color \
+    CLAUDE_CODE_USE_FOUNDRY=1 \
+    ANTHROPIC_FOUNDRY_RESOURCE=incontext-azure-foundry-eastus2 \
+    "${auth[@]}" \
+    ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5 \
+    ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-4-6 \
+    ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5 \
+    command claude "$@"
+}
+cc()  { _ccwork "$@"; }
+ccr() { _ccwork --resume "$@"; }
+ccc() { _ccwork --continue "$@"; }
+
+
+# iTerm2 side margins are a global pixel value, so fullscreen text width has to be
+# retuned by hand when switching between laptop screen and external monitor.
+# Contrary to the docs, this applies live -- no iTerm2 restart.
+ITERM_MARGIN_LAPTOP=300
+ITERM_MARGIN_MONITOR=600
+
+margin() {
+    local domain=com.googlecode.iterm2 current target
+    current=$(defaults read "$domain" TerminalMargin 2>/dev/null) || current=5
+    case "$1" in
+        "")
+            if [ "$current" -ge "$ITERM_MARGIN_MONITOR" ]; then
+                target=$ITERM_MARGIN_LAPTOP
+            else
+                target=$ITERM_MARGIN_MONITOR
+            fi
+            ;;
+        laptop)  target=$ITERM_MARGIN_LAPTOP ;;
+        monitor) target=$ITERM_MARGIN_MONITOR ;;
+        <->)     target=$1 ;;
+        *)       print -u2 "usage: margin [laptop|monitor|<pixels>]"; return 1 ;;
+    esac
+    defaults write "$domain" TerminalMargin -int "$target"
+    print "TerminalMargin: $current -> $target"
+}
