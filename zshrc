@@ -307,10 +307,13 @@ export HAXE_STD_PATH="/opt/homebrew/lib/haxe/std"
 #
 # Needed for Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/vimfiles/bin:$PATH"
 
 
 # Work Claude Code via ICS Azure Foundry. Foundry vars scoped per-process only.
 # Personal desktop app + any non-cc claude stay on subscription.
+# claude-narrow caps the measure per-process, so vim/lazygit keep the full window
+# and `margin` can stay at laptop. Override with: CLAUDE_COLUMNS=999 cc
 _ccwork() {
     # Long-lived Foundry API key beats Entra tokens that expire mid-session.
     # Falls back to az Entra default chain if key not in keychain.
@@ -325,7 +328,7 @@ _ccwork() {
     ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5 \
     ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-4-6 \
     ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5 \
-    command claude "$@"
+    claude-narrow "$@"
 }
 cc()  { _ccwork "$@"; }
 ccr() { _ccwork --resume "$@"; }
@@ -335,8 +338,8 @@ ccc() { _ccwork --continue "$@"; }
 # iTerm2 side margins are a global pixel value, so fullscreen text width has to be
 # retuned by hand when switching between laptop screen and external monitor.
 # Contrary to the docs, this applies live -- no iTerm2 restart.
-ITERM_MARGIN_LAPTOP=300
-ITERM_MARGIN_MONITOR=600
+ITERM_MARGIN_LAPTOP=0
+ITERM_MARGIN_MONITOR=700
 
 margin() {
     local domain=com.googlecode.iterm2 current target

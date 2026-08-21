@@ -1,0 +1,432 @@
+#!/usr/bin/env python3
+"""Run a command in a pty of capped width, optionally centered in the real terminal.
+
+Centering uses DECLRMM (private mode 69) + DECSLRM to fence the terminal into a
+narrower region, and DECOM so the child's absolute cursor addressing lands inside
+that region. Terminals without mode 69 fall back to a left-aligned capped column.
+
+Suspend needs care. The child runs in its own session, which leaves its process
+group orphaned, and POSIX discards stop signals sent to an orphaned process group.
+A child that suspends itself therefore never actually stops. So ctrl+z is caught
+here instead: the child is stopped with SIGSTOP (which cannot be discarded), the
+real terminal is put back the way the shell expects it, and this process stops
+itself. fg reverses all of it.
+"""
+
+import errno
+import fcntl
+import os
+import pty
+import re
+import select
+import shutil
+import signal
+import struct
+import sys
+import termios
+import time
+import tty
+
+BUFFER_SIZE = 65536
+PROBE_TIMEOUT_SECONDS = 0.4
+STOP_TIMEOUT_SECONDS = 1.0
+
+MARGIN_PROBE = b"\033[?69$p"
+MARGIN_PROBE_REPLY = re.compile(rb"\033\[\?69;([0-4])\$y")
+SUPPORTED_MODE_STATES = (b"1", b"2", b"3")
+
+SCREEN_SWITCH = re.compile(rb"\033\[\?(?:1049|1047|47)([hl])")
+ORIGIN_MODE_RESET = b"\033[?6l"
+ENTER_ALT_SCREEN = b"\033[?1049h"
+LEAVE_ALT_SCREEN = b"\033[?1049l"
+
+SUSPEND_BYTE = 0x1A
+PASTE_START = b"\033[200~"
+PASTE_END = b"\033[201~"
+
+
+def real_size(cap):
+    size = shutil.get_terminal_size(fallback=(cap, 24))
+    return size.lines, size.columns
+
+
+def apply_pty_size(fd, rows, cols):
+    fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", rows, cols, 0, 0))
+
+
+def probe_margin_support(stdin_fd, stdout_fd):
+    os.write(stdout_fd, MARGIN_PROBE)
+    deadline = time.monotonic() + PROBE_TIMEOUT_SECONDS
+    reply = b""
+    while time.monotonic() < deadline:
+        readable, _, _ = select.select([stdin_fd], [], [], deadline - time.monotonic())
+        if not readable:
+            break
+        reply += os.read(stdin_fd, BUFFER_SIZE)
+        match = MARGIN_PROBE_REPLY.search(reply)
+        if match:
+            return match.group(1) in SUPPORTED_MODE_STATES
+    return False
+
+
+def margin_setup(left_offset, cols):
+    if left_offset <= 0:
+        return margin_teardown()
+    return b"".join([
+        b"\033[?69h",
+        b"\033[%d;%ds" % (left_offset + 1, left_offset + cols),
+        b"\033[?6h",
+    ])
+
+
+def margin_teardown():
+    return b"\033[?6l\033[?69l\033[r"
+
+
+class Layout:
+    def __init__(self, cap, centered):
+        self.cap = cap
+        self.centered = centered
+        self.rows = 24
+        self.cols = cap
+        self.left_offset = 0
+
+    def recompute(self):
+        self.rows, real_cols = real_size(self.cap)
+        self.cols = min(self.cap, real_cols)
+        self.left_offset = (real_cols - self.cols) // 2 if self.centered else 0
+
+    def apply(self, master_fd, stdout_fd):
+        self.recompute()
+        apply_pty_size(master_fd, self.rows, self.cols)
+        self.reassert_margins(stdout_fd)
+
+    def reassert_margins(self, stdout_fd):
+        if self.centered:
+            os.write(stdout_fd, margin_setup(self.left_offset, self.cols))
+
+    def clear_margins(self, stdout_fd):
+        if self.centered:
+            os.write(stdout_fd, margin_teardown())
+
+    def force_redraw(self, master_fd):
+        apply_pty_size(master_fd, self.rows, max(1, self.cols - 1))
+        apply_pty_size(master_fd, self.rows, self.cols)
+
+
+class ScreenState:
+    def __init__(self):
+        self.alt_active = False
+
+    def observe(self, chunk):
+        switches = SCREEN_SWITCH.findall(chunk)
+        if switches:
+            self.alt_active = switches[-1] == b"h"
+        return bool(switches) or ORIGIN_MODE_RESET in chunk
+
+
+class SuspendScanner:
+    """Finds ctrl+z in the input stream, ignoring bytes inside a bracketed paste."""
+
+    def __init__(self):
+        self.in_paste = False
+
+    def find(self, data):
+        index = 0
+        while index < len(data):
+            if self.in_paste:
+                if data.startswith(PASTE_END, index):
+                    self.in_paste = False
+                    index += len(PASTE_END)
+                    continue
+            elif data.startswith(PASTE_START, index):
+                self.in_paste = True
+                index += len(PASTE_START)
+                continue
+            elif data[index] == SUSPEND_BYTE:
+                return index
+            index += 1
+        return -1
+
+
+class Flag:
+    def __init__(self, pending=False):
+        self._pending = pending
+
+    def set(self, *_):
+        self._pending = True
+
+    def pop(self):
+        was_pending, self._pending = self._pending, False
+        return was_pending
+
+
+class Child:
+    def __init__(self, pid):
+        self.pid = pid
+        self.exit_code = None
+
+    def signal_group(self, signum):
+        try:
+            os.killpg(os.getpgid(self.pid), signum)
+            return True
+        except (ProcessLookupError, PermissionError, ChildProcessError):
+            return False
+
+    def stop(self):
+        if not self.signal_group(signal.SIGSTOP):
+            return
+        deadline = time.monotonic() + STOP_TIMEOUT_SECONDS
+        while time.monotonic() < deadline:
+            try:
+                waited, status = os.waitpid(self.pid, os.WNOHANG | os.WUNTRACED)
+            except ChildProcessError:
+                return
+            if waited and os.WIFSTOPPED(status):
+                return
+            time.sleep(0.005)
+
+    def resume(self):
+        self.signal_group(signal.SIGCONT)
+
+    def poll(self):
+        try:
+            waited, status = os.waitpid(self.pid, os.WNOHANG | os.WUNTRACED)
+        except ChildProcessError:
+            self.exit_code = 0
+            return "exited"
+        if waited == 0:
+            return None
+        if os.WIFSTOPPED(status):
+            return "stopped"
+        self._record(status)
+        return "exited"
+
+    def wait(self):
+        while self.exit_code is None:
+            try:
+                _, status = os.waitpid(self.pid, os.WUNTRACED)
+            except ChildProcessError:
+                self.exit_code = 0
+                break
+            except InterruptedError:
+                continue
+            if os.WIFSTOPPED(status):
+                self.resume()
+                continue
+            self._record(status)
+        return self.exit_code
+
+    def _record(self, status):
+        if os.WIFSIGNALED(status):
+            self.exit_code = 128 + os.WTERMSIG(status)
+        else:
+            self.exit_code = os.WEXITSTATUS(status)
+
+
+def spawn_child(command):
+    pid, master_fd = pty.fork()
+    if pid == 0:
+        os.environ.pop("COLUMNS", None)
+        os.environ.pop("LINES", None)
+        os.execvp(command[0], command)
+    return pid, master_fd
+
+
+def install_signal_wakeup(handlers):
+    read_fd, write_fd = os.pipe()
+    os.set_blocking(read_fd, False)
+    os.set_blocking(write_fd, False)
+    signal.set_wakeup_fd(write_fd)
+    for signum, handler in handlers.items():
+        signal.signal(signum, handler)
+    return read_fd
+
+
+def drain(fd):
+    try:
+        while os.read(fd, BUFFER_SIZE):
+            pass
+    except (BlockingIOError, OSError):
+        pass
+
+
+def set_raw_mode(fd):
+    previous = signal.signal(signal.SIGTTOU, signal.SIG_IGN)
+    try:
+        tty.setraw(fd)
+    finally:
+        signal.signal(signal.SIGTTOU, previous)
+
+
+def restore_mode(fd, saved):
+    previous = signal.signal(signal.SIGTTOU, signal.SIG_IGN)
+    try:
+        termios.tcsetattr(fd, termios.TCSAFLUSH, saved)
+    finally:
+        signal.signal(signal.SIGTTOU, previous)
+
+
+def stop_self():
+    previous = signal.signal(signal.SIGTSTP, signal.SIG_DFL)
+    try:
+        os.kill(os.getpid(), signal.SIGTSTP)
+    finally:
+        signal.signal(signal.SIGTSTP, previous)
+
+
+class Session:
+    def __init__(self, child, master_fd, layout, screen, saved_termios):
+        self.child = child
+        self.master_fd = master_fd
+        self.layout = layout
+        self.screen = screen
+        self.saved_termios = saved_termios
+        self.stdin_fd = sys.stdin.fileno()
+        self.stdout_fd = sys.stdout.fileno()
+
+    def flush_child_output(self):
+        while True:
+            readable, _, _ = select.select([self.master_fd], [], [], 0)
+            if not readable:
+                return
+            try:
+                data = os.read(self.master_fd, BUFFER_SIZE)
+            except OSError:
+                return
+            if not data:
+                return
+            os.write(self.stdout_fd, data)
+            self.screen.observe(data)
+
+    def suspend(self, already_stopped=False):
+        self.flush_child_output()
+        if not already_stopped:
+            self.child.stop()
+
+        if self.screen.alt_active:
+            os.write(self.stdout_fd, LEAVE_ALT_SCREEN)
+        self.layout.clear_margins(self.stdout_fd)
+        restore_mode(self.stdin_fd, self.saved_termios)
+
+        stop_self()
+
+        set_raw_mode(self.stdin_fd)
+        if self.screen.alt_active:
+            os.write(self.stdout_fd, ENTER_ALT_SCREEN)
+        self.layout.apply(self.master_fd, self.stdout_fd)
+        self.child.resume()
+        self.layout.force_redraw(self.master_fd)
+
+
+def forward_input(session, scanner, data):
+    while data:
+        at = scanner.find(data)
+        if at < 0:
+            os.write(session.master_fd, data)
+            return
+        if at:
+            os.write(session.master_fd, data[:at])
+        session.suspend()
+        data = data[at + 1:]
+
+
+def relay(session, wakeup_fd, resize_pending, child_changed):
+    stdin_fd, stdout_fd = session.stdin_fd, session.stdout_fd
+    master_fd = session.master_fd
+    scanner = SuspendScanner()
+
+    while True:
+        if resize_pending.pop():
+            session.layout.apply(master_fd, stdout_fd)
+
+        if child_changed.pop():
+            state = session.child.poll()
+            if state == "exited":
+                return
+            if state == "stopped":
+                session.suspend(already_stopped=True)
+                continue
+
+        try:
+            readable, _, _ = select.select([stdin_fd, master_fd, wakeup_fd], [], [])
+        except InterruptedError:
+            continue
+
+        if wakeup_fd in readable:
+            drain(wakeup_fd)
+
+        if master_fd in readable:
+            try:
+                data = os.read(master_fd, BUFFER_SIZE)
+            except OSError as exc:
+                if exc.errno == errno.EIO:
+                    return
+                raise
+            if not data:
+                return
+            os.write(stdout_fd, data)
+            if session.screen.observe(data):
+                session.layout.reassert_margins(stdout_fd)
+
+        if stdin_fd in readable:
+            data = os.read(stdin_fd, BUFFER_SIZE)
+            if not data:
+                return
+            forward_input(session, scanner, data)
+
+
+def parse_args(argv):
+    centered = False
+    if argv and argv[0] == "--center":
+        centered = True
+        argv = argv[1:]
+    if len(argv) < 2:
+        sys.exit("usage: ptycap [--center] <max-columns> <command> [args...]")
+    return centered, int(argv[0]), argv[1:]
+
+
+def main():
+    centered, cap, command = parse_args(sys.argv[1:])
+
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        os.execvp(command[0], command)
+
+    stdin_fd = sys.stdin.fileno()
+    stdout_fd = sys.stdout.fileno()
+    saved = termios.tcgetattr(stdin_fd)
+
+    try:
+        set_raw_mode(stdin_fd)
+        if centered:
+            centered = probe_margin_support(stdin_fd, stdout_fd)
+
+        layout = Layout(cap, centered)
+        screen = ScreenState()
+        pid, master_fd = spawn_child(command)
+        child = Child(pid)
+        session = Session(child, master_fd, layout, screen, saved)
+
+        resize_pending = Flag(pending=True)
+        child_changed = Flag()
+        wakeup_fd = install_signal_wakeup({
+            signal.SIGWINCH: resize_pending.set,
+            signal.SIGCHLD: child_changed.set,
+        })
+
+        try:
+            relay(session, wakeup_fd, resize_pending, child_changed)
+        except (KeyboardInterrupt, OSError):
+            pass
+        finally:
+            signal.set_wakeup_fd(-1)
+            layout.clear_margins(stdout_fd)
+            os.close(master_fd)
+    finally:
+        restore_mode(stdin_fd, saved)
+
+    sys.exit(child.wait())
+
+
+if __name__ == "__main__":
+    main()

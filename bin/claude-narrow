@@ -1,0 +1,3 @@
+#!/bin/sh
+# Claude Code at a readable measure, without shrinking the terminal window.
+exec "$(dirname "$0")/ptycap" --center "${CLAUDE_COLUMNS:-100}" claude "$@"
