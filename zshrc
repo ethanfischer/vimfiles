@@ -120,13 +120,34 @@ alias eman="cd ~/Repos/ICS/InContext.Everyman/trunk"
 alias lg="lazygit"
 #alias slg="sudo lazygit"
 alias alie="nvim ~/vimfiles/zshrc"
-alias sp="nvim /Users/Shared/repos/ScratchPad/ScratchPad.txt"
+alias spd="nvim /Users/Shared/repos/ScratchPad/ScratchPad.txt"
 alias ssp="sudo nvim /Users/Shared/ScratchPad.txt"
 alias vim=nvim
 alias e.="open ."
 alias src="source ~/.zshrc"
 alias vs="open *.sln"
 alias psh="git push"
+
+GHOSTTY_CONFIG=~/.config/ghostty/config
+ghostty-light() {
+  local theme="${1:-Builtin Light}"
+  sed -i '' "s/^theme = .*/theme = $theme/" "$GHOSTTY_CONFIG"
+  sed -i '' 's/^background-image/#background-image/' "$GHOSTTY_CONFIG"
+  if grep -q '^minimum-contrast' "$GHOSTTY_CONFIG"; then
+    sed -i '' 's/^minimum-contrast = .*/minimum-contrast = 3/' "$GHOSTTY_CONFIG"
+  else
+    sed -i '' "s/^theme = $theme/theme = $theme\\
+minimum-contrast = 3/" "$GHOSTTY_CONFIG"
+  fi
+  echo "Ghostty theme -> $theme (background image disabled, minimum-contrast set for legibility). Reload with Cmd+Shift+, "
+}
+ghostty-dark() {
+  local theme="${1:-iterm-hotkey}"
+  sed -i '' "s/^theme = .*/theme = $theme/" "$GHOSTTY_CONFIG"
+  sed -i '' 's/^#background-image/background-image/' "$GHOSTTY_CONFIG"
+  sed -i '' '/^minimum-contrast = /d' "$GHOSTTY_CONFIG"
+  echo "Ghostty theme -> $theme (background image restored, minimum-contrast removed). Reload with Cmd+Shift+, "
+}
 alias pl="git pull"
 alias chm="git checkout master"
 alias wchm="git checkout main"
@@ -248,8 +269,8 @@ function pr() {
 
 ics() {
     if [ $# -eq 0 ]; then
-        echo "Usage: ics <name>"
-        return 1
+        cd ~/repos/ICS
+        return
     fi
 
     cd "InContext.$1"
@@ -310,24 +331,10 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/vimfiles/bin:$PATH"
 
 
-# Work Claude Code via ICS Azure Foundry. Foundry vars scoped per-process only.
-# Personal desktop app + any non-cc claude stay on subscription.
+# Work Claude Code via ICS Claude for Teams (OAuth login via /login).
 # claude-narrow caps the measure per-process, so vim/lazygit keep the full window
 # and `margin` can stay at laptop. Override with: CLAUDE_COLUMNS=999 cc
 _ccwork() {
-    # Long-lived Foundry API key beats Entra tokens that expire mid-session.
-    # Falls back to az Entra default chain if key not in keychain.
-    local -a auth
-    local key
-    key=$(security find-generic-password -a "$USER" -s foundry-api-key -w 2>/dev/null)
-    [ -n "$key" ] && auth=(ANTHROPIC_FOUNDRY_API_KEY="$key")
-    env -u TERM_PROGRAM -u TERM_PROGRAM_VERSION TERM=xterm-256color \
-    CLAUDE_CODE_USE_FOUNDRY=1 \
-    ANTHROPIC_FOUNDRY_RESOURCE=incontext-azure-foundry-eastus2 \
-    "${auth[@]}" \
-    ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5 \
-    ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-4-6 \
-    ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5 \
     claude-narrow "$@"
 }
 cc()  { _ccwork "$@"; }
@@ -359,4 +366,135 @@ margin() {
     esac
     defaults write "$domain" TerminalMargin -int "$target"
     print "TerminalMargin: $current -> $target"
+}
+
+
+# ── git worktrees ────────────────────────────────────────────────────────────
+# Worktrees live in a sibling <repo>-worktrees/ dir. Every command below works
+# from inside the main clone, inside any worktree, or from the -worktrees dir
+# itself (which is not a repo, so plain git commands fail there).
+WT_SUFFIX="-worktrees"
+
+_wt_main() {
+    local common dir
+    if common=$(git rev-parse --git-common-dir 2>/dev/null); then
+        common=${common:A}
+        [[ ${common:t} == .git ]] && print -r -- ${common:h} || print -r -- $common
+        return 0
+    fi
+    dir=${PWD:A}
+    while [[ $dir != / ]]; do
+        if [[ $dir == *$WT_SUFFIX && -d ${dir%$WT_SUFFIX}/.git ]]; then
+            print -r -- ${dir%$WT_SUFFIX}
+            return 0
+        fi
+        dir=${dir:h}
+    done
+    print -u2 "wt: run this from a repo, a worktree, or a *$WT_SUFFIX directory"
+    return 1
+}
+
+_wt_base_branch() {
+    local b
+    if b=$(git -C "$1" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null); then
+        print -r -- ${b#origin/}
+        return
+    fi
+    for b in main master; do
+        git -C "$1" show-ref --verify --quiet "refs/remotes/origin/$b" && { print -r -- $b; return }
+    done
+    print -r -- main
+}
+
+_wt_paths() {
+    git -C "$1" worktree list --porcelain | awk '/^worktree /{print substr($0, 10)}'
+}
+
+_wt_pick() {
+    _wt_paths "$1" | fzf --query="${2:-}" --select-1 --exit-0 --height=40% --reverse
+}
+
+# wt                      list worktrees
+# wt <branch>             new worktree off latest origin/main, or check out an existing branch
+# wt -b <base> <branch>   base it on something other than main
+# wt <branch> <dir>       override the directory name
+wt() {
+    local base="" branch dir main root dest
+    while [[ $1 == -* ]]; do
+        case $1 in
+            -b) base=$2; shift 2 ;;
+            -h|--help) print "usage: wt [-b base] <branch> [dir]"; return 0 ;;
+            *)  print -u2 "wt: unknown flag $1"; return 1 ;;
+        esac
+    done
+
+    main=$(_wt_main) || return 1
+    [[ -z $1 ]] && { git -C "$main" worktree list; return 0 }
+
+    branch=$1
+    dir=${2:-${branch//\//-}}
+    root="${main}${WT_SUFFIX}"
+    dest="$root/$dir"
+    [[ -e $dest ]] && { print -u2 "wt: $dest already exists"; return 1 }
+    [[ -z $base ]] && base=$(_wt_base_branch "$main")
+    mkdir -p "$root"
+
+    if git -C "$main" show-ref --verify --quiet "refs/heads/$branch"; then
+        git -C "$main" worktree add "$dest" "$branch" || return 1
+    elif git -C "$main" ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+        git -C "$main" fetch --quiet origin "$branch" &&
+        git -C "$main" worktree add --track -b "$branch" "$dest" "origin/$branch" || return 1
+    else
+        print "fetching origin/$base ..."
+        git -C "$main" fetch --quiet origin "$base" || return 1
+        git -C "$main" worktree add -b "$branch" "$dest" FETCH_HEAD || return 1
+    fi
+
+    cd "$dest"
+    git status --short --branch
+}
+
+wtl() {
+    local main; main=$(_wt_main) || return 1
+    git -C "$main" worktree list | while IFS= read -r line; do
+        local wtpath=${line%% *}
+        local bt=$(stat -f %B "$wtpath" 2>/dev/null || print 0)
+        local created=$(stat -f "%SB" -t "%Y-%m-%d %H:%M" "$wtpath" 2>/dev/null || print "?")
+        printf '%s\t%s  %s\n' "$bt" "$created" "$line"
+    done | sort -rn -k1,1 | cut -f2-
+}
+
+wtcd() {
+    local main dest
+    main=$(_wt_main) || return 1
+    dest=$(_wt_pick "$main" "$1") || return 1
+    [[ -n $dest ]] && cd "$dest"
+}
+
+wtm() {
+    local main; main=$(_wt_main) || return 1
+    cd "$main"
+}
+
+wtrm() {
+    local main dest branch
+    main=$(_wt_main) || return 1
+    dest=$(_wt_pick "$main" "$1") || return 1
+    [[ -z $dest ]] && return 1
+    [[ ${dest:A} == ${main:A} ]] && { print -u2 "wt: that's the main clone"; return 1 }
+
+    branch=$(git -C "$dest" branch --show-current)
+    [[ ${PWD:A} == ${dest:A}(|/*) ]] && cd "$main"
+    git -C "$main" worktree remove "$dest" || return 1
+    print "removed $dest"
+    if [[ -n $branch ]]; then
+        read -q "?delete local branch $branch? [y/N] "
+        print
+        [[ $REPLY == y ]] && git -C "$main" branch -D "$branch"
+    fi
+}
+
+wtprune() {
+    local main; main=$(_wt_main) || return 1
+    git -C "$main" worktree prune -v
 }

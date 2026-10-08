@@ -41,6 +41,13 @@ ENTER_ALT_SCREEN = b"\033[?1049h"
 LEAVE_ALT_SCREEN = b"\033[?1049l"
 
 SUSPEND_BYTE = 0x1A
+# With the kitty keyboard protocol or modifyOtherKeys on, ctrl+z arrives as an
+# escape sequence instead. Claude turns the kitty protocol on in Ghostty.
+SUSPEND_SEQUENCE = re.compile(
+    rb"\033\[(?:122(?::\d*)*;(\d+)(?::1)?u|27;(\d+);122~)"
+)
+CTRL_BIT = 4
+NON_LOCK_MODIFIER_BITS = 0b111111
 PASTE_START = b"\033[200~"
 PASTE_END = b"\033[201~"
 
@@ -119,14 +126,32 @@ class ScreenState:
         self.alt_active = False
 
     def observe(self, chunk):
-        switches = SCREEN_SWITCH.findall(chunk)
+        """Returns the offset just past the last margin-dropping sequence, or -1.
+
+        Reasserting margins homes the cursor, so it must land right after that
+        sequence. At the end of the chunk it would land mid-frame and the
+        child's relative cursor moves would draw over the top rows.
+        """
+        switches = list(SCREEN_SWITCH.finditer(chunk))
         if switches:
-            self.alt_active = switches[-1] == b"h"
-        return bool(switches) or ORIGIN_MODE_RESET in chunk
+            self.alt_active = switches[-1].group(1) == b"h"
+        ends = [match.end() for match in switches]
+        origin_reset = chunk.rfind(ORIGIN_MODE_RESET)
+        if origin_reset >= 0:
+            ends.append(origin_reset + len(ORIGIN_MODE_RESET))
+        return max(ends, default=-1)
+
+
+def is_ctrl_only(modifiers):
+    # Lock bits (caps, num) above the low six do not change the key.
+    return (int(modifiers) - 1) & NON_LOCK_MODIFIER_BITS == CTRL_BIT
 
 
 class SuspendScanner:
-    """Finds ctrl+z in the input stream, ignoring bytes inside a bracketed paste."""
+    """Finds ctrl+z in the input stream, ignoring bytes inside a bracketed paste.
+
+    Returns (start, length) of the ctrl+z, or (-1, 0).
+    """
 
     def __init__(self):
         self.in_paste = False
@@ -144,9 +169,13 @@ class SuspendScanner:
                 index += len(PASTE_START)
                 continue
             elif data[index] == SUSPEND_BYTE:
-                return index
+                return index, 1
+            else:
+                match = SUSPEND_SEQUENCE.match(data, index)
+                if match and is_ctrl_only(match.group(1) or match.group(2)):
+                    return index, match.end() - index
             index += 1
-        return -1
+        return -1, 0
 
 
 class Flag:
@@ -321,14 +350,14 @@ class Session:
 
 def forward_input(session, scanner, data):
     while data:
-        at = scanner.find(data)
+        at, length = scanner.find(data)
         if at < 0:
             os.write(session.master_fd, data)
             return
         if at:
             os.write(session.master_fd, data[:at])
         session.suspend()
-        data = data[at + 1:]
+        data = data[at + length:]
 
 
 def relay(session, wakeup_fd, resize_pending, child_changed):
@@ -365,9 +394,13 @@ def relay(session, wakeup_fd, resize_pending, child_changed):
                 raise
             if not data:
                 return
-            os.write(stdout_fd, data)
-            if session.screen.observe(data):
+            split = session.screen.observe(data)
+            if split < 0:
+                os.write(stdout_fd, data)
+            else:
+                os.write(stdout_fd, data[:split])
                 session.layout.reassert_margins(stdout_fd)
+                os.write(stdout_fd, data[split:])
 
         if stdin_fd in readable:
             data = os.read(stdin_fd, BUFFER_SIZE)
