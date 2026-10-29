@@ -196,4 +196,11 @@ cmp.setup {
   },
 }
 
+-- Preview image URL under cursor in a float (Kitty graphics protocol, in memory only)
+local url_image_preview = dofile(vim.fn.expand('~/vimfiles/lua/url_image_preview.lua'))
+vim.keymap.set('n', '<leader>ip', function()
+  -- width/height: start size as part of the editor (0 < n <= 1). While open: + or = zooms in 10%, - zooms out
+  url_image_preview.preview({ width = 1, height = 1 })
+end, { desc = 'Preview image URL under cursor' })
+
 EOF
