@@ -84,7 +84,7 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting vi-mode)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -286,25 +286,6 @@ export PATH=$PATH:~/Android/Sdk/platform-tools
 export PATH=$PATH:~/Library/Android/sdk/platform-tools
 
 
-# Change cursor shape for vi-mode
-function zle-keymap-select {
-  if [[ ${KEYMAP} == vicmd ]]; then
-    echo -ne "\e[2 q"
-  elif [[ ${KEYMAP} == main ]]; then
-    echo -ne "\e[6 q"
-  fi
-  zle reset-prompt
-  zle -R
-}
-
-zle -N zle-keymap-select
-zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[6 q"
-}
-zle -N zle-line-init
-KEYTIMEOUT=1
-#end change cursor shape for vi-mode
 
 # accept autosuggestions
 bindkey "^[[Z" autosuggest-accept
